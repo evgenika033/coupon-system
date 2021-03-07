@@ -1,6 +1,9 @@
 package facades;
 
+import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.security.auth.login.LoginException;
 
@@ -51,21 +54,32 @@ public class CompanyFacade extends ClientFacade {
 		couponDao.delete(couponID);
 	}
 
-	public List<Coupon> getCompanyCoupons() throws DBException, ThreadException {
+	// all coupons of specific company
+	public List<Coupon> getCompanyCoupons() throws DBException, ThreadException, SQLException {
 		String sql = DBUtils.GET_ONE_QUERY.replace(DBUtils.TABLE_PLACE_HOLDER, CouponUtil.TABLE)
-				.replace(DBUtils.PARAMETER_PLACE_HOLDER, CouponUtil.GET_BY_COMPANY_ID)
-				.replace(DBUtils.COMPANY_ID_PLACE_HOLDER, String.valueOf(companyID));
-		return couponDao.get(sql);
+				.replace(DBUtils.PARAMETER_PLACE_HOLDER, CouponUtil.GET_BY_COMPANY_ID);
+		Map<Integer, Object> parameters = new HashMap<Integer, Object>();
+		parameters.put(Integer.valueOf(1), Integer.valueOf(companyID));
+		return couponDao.get(sql, parameters);
 	}
 
-	public List<Coupon> getCompanyCoupons(Category category) {
-		return null;
-		// return couponDao.get(category);
-
+	public List<Coupon> getCompanyCoupons(Category category) throws DBException, ThreadException, SQLException {
+		String sql = DBUtils.GET_ONE_QUERY.replace(DBUtils.TABLE_PLACE_HOLDER, CouponUtil.TABLE)
+				.replace(DBUtils.PARAMETER_PLACE_HOLDER, CouponUtil.GET_BY_COMPANY_ID_AND_CATEGORY);
+		Map<Integer, Object> parameters = new HashMap<Integer, Object>();
+		parameters.put(Integer.valueOf(1), Integer.valueOf(companyID));
+		// ordinal starts with 0, but DB id starts with 1. for this need add 1
+		parameters.put(Integer.valueOf(2), Integer.valueOf(category.ordinal() + 1));
+		return couponDao.get(sql, parameters);
 	}
 
-	public List<Coupon> getCompanyCoupons(double maxPrice) {
-		return null;
+	public List<Coupon> getCompanyCoupons(double maxPrice) throws DBException, ThreadException, SQLException {
+		String sql = DBUtils.GET_ONE_QUERY.replace(DBUtils.TABLE_PLACE_HOLDER, CouponUtil.TABLE)
+				.replace(DBUtils.PARAMETER_PLACE_HOLDER, CouponUtil.GET_BY_COMPANY_ID_AND_MAX_PRICE);
+		Map<Integer, Object> parameters = new HashMap<Integer, Object>();
+		parameters.put(Integer.valueOf(1), Integer.valueOf(companyID));
+		parameters.put(Integer.valueOf(2), Double.valueOf(maxPrice));
+		return couponDao.get(sql, parameters);
 
 	}
 

@@ -27,7 +27,6 @@ public class CompanyDao implements ICompanyDao {
 		String sql = DBUtils.ADD_COMPANY_QUERY;
 		boolean fromUpdate = false;
 		if (StringHelper.allParametersNotEmpty(addObject, fromUpdate)) {
-
 			// Company not exists
 			Connection connection = ConnectionPool.getInstance().getConnection();
 			try (PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -37,17 +36,13 @@ public class CompanyDao implements ICompanyDao {
 				statement.setString(3, addObject.getPassword());
 				System.out.println("add sql: " + statement);
 				statement.execute();
-				returnConnection(connection);
-
+				DBUtils.returnConnection(connection);
 				System.out.println("The company added: " + addObject.getName());
-				// TODO Jeka need continue o add
-
 			} catch (SQLException e) {
-				returnConnection(connection);
+				DBUtils.returnConnection(connection);
 				throw new DBException(StringHelper.COMPANY_EXCEPTION + e.getCause());
 			}
 		}
-
 	}
 
 	@Override
@@ -64,12 +59,12 @@ public class CompanyDao implements ICompanyDao {
 				statement.setInt(3, updateObject.getId());
 				System.out.println("update sql: " + statement);
 				int result = statement.executeUpdate();
-				returnConnection(connection);
+				DBUtils.returnConnection(connection);
 				if (result > 0) {
 					System.out.println("Update company success: " + updateObject.getName());
 				}
 			} catch (SQLException e) {
-				returnConnection(connection);
+				DBUtils.returnConnection(connection);
 				throw new DBException(StringHelper.COMPANY_EXCEPTION + e.getCause());
 			}
 		}
@@ -85,11 +80,11 @@ public class CompanyDao implements ICompanyDao {
 			statement.setInt(1, id);
 			System.out.println("get sql: " + statement);
 			ResultSet resultSet = statement.executeQuery();
-			returnConnection(connection);
+			DBUtils.returnConnection(connection);
 			if (resultSet != null) {
 				// System.out.println(StringHelper.RESULT_SET_IS_NOT_NULL_MESSAGE);
 				if (resultSet.next()) {
-					company = resultSetToCompany(resultSet);
+					company = CompanyUtil.resultSetToCompany(resultSet);
 
 				}
 			} else {
@@ -97,7 +92,7 @@ public class CompanyDao implements ICompanyDao {
 				System.out.println(StringHelper.RESULT_SET_ISNULL_MESSAGE);
 			}
 		} catch (SQLException e) {
-			returnConnection(connection);
+			DBUtils.returnConnection(connection);
 			throw new DBException(StringHelper.COMPANY_EXCEPTION + e.getCause());
 		}
 		return company;
@@ -112,19 +107,19 @@ public class CompanyDao implements ICompanyDao {
 		try (PreparedStatement statement = connection.prepareStatement(sql)) {
 			System.out.println("get sql: " + statement);
 			ResultSet resultSet = statement.executeQuery();
-			returnConnection(connection);
+			DBUtils.returnConnection(connection);
 			if (resultSet != null) {
 				System.out.println(StringHelper.RESULT_SET_IS_NOT_NULL_MESSAGE);
 				while (resultSet.next()) {
 
-					Company company = resultSetToCompany(resultSet);
+					Company company = CompanyUtil.resultSetToCompany(resultSet);
 					companies.add(company);
 				}
 			} else {
 				System.out.println(StringHelper.RESULT_SET_ISNULL_MESSAGE);
 			}
 		} catch (SQLException e) {
-			returnConnection(connection);
+			DBUtils.returnConnection(connection);
 			throw new DBException(StringHelper.COMPANY_EXCEPTION + e.getCause());
 		}
 
@@ -139,18 +134,18 @@ public class CompanyDao implements ICompanyDao {
 		try (PreparedStatement statement = connection.prepareStatement(sql)) {
 			System.out.println("get sql: " + statement);
 			ResultSet resultSet = statement.executeQuery();
-			returnConnection(connection);
+			DBUtils.returnConnection(connection);
 			if (resultSet != null) {
 				System.out.println(StringHelper.RESULT_SET_IS_NOT_NULL_MESSAGE);
 				while (resultSet.next()) {
-					Company company = resultSetToCompany(resultSet);
+					Company company = CompanyUtil.resultSetToCompany(resultSet);
 					companies.add(company);
 				}
 			} else {
 				System.out.println(StringHelper.RESULT_SET_ISNULL_MESSAGE);
 			}
 		} catch (SQLException e) {
-			returnConnection(connection);
+			DBUtils.returnConnection(connection);
 			throw new DBException(StringHelper.COMPANY_EXCEPTION + e.getCause());
 		}
 
@@ -164,13 +159,14 @@ public class CompanyDao implements ICompanyDao {
 		try (PreparedStatement statement = connection.prepareStatement(sql)) {
 			System.out.println("getCount sql: " + statement);
 			ResultSet resultSet = statement.executeQuery();
-			returnConnection(connection);
+			DBUtils.returnConnection(connection);
 			System.out.println(StringHelper.RESULT_SET_IS_NOT_NULL_MESSAGE);
 			if (resultSet.next()) {
 				return resultSet.getInt(1);
 			}
 
 		} catch (SQLException e) {
+			DBUtils.returnConnection(connection);
 			throw new DBException(StringHelper.COMPANY_EXCEPTION + e);
 		}
 		return 0;
@@ -186,30 +182,15 @@ public class CompanyDao implements ICompanyDao {
 			statement.setInt(1, id);
 			System.out.println("delete sql: " + statement);
 			int result = statement.executeUpdate();
-			returnConnection(connection);
+			DBUtils.returnConnection(connection);
 			if (result > 0) {
 				System.out.println("The company deleted successfully");
 			} else {
 				System.out.println("The company delete failed.");
 			}
 		} catch (SQLException e) {
-			returnConnection(connection);
+			DBUtils.returnConnection(connection);
 			throw new DBException(StringHelper.COMPANY_EXCEPTION + e.getCause());
-		}
-
-	}
-
-	private Company resultSetToCompany(ResultSet resultSet) throws DBException {
-
-		try {
-			int id = resultSet.getInt(1);
-			String name = resultSet.getString(2);
-			String email = resultSet.getString(3);
-			String password = resultSet.getString(4);
-			return new Company(id, name, email, password);
-		} catch (SQLException e) {
-			throw new DBException("Read resultSet Exception. " + e);
-
 		}
 
 	}
@@ -223,7 +204,7 @@ public class CompanyDao implements ICompanyDao {
 			statement.setString(2, email);
 			System.out.println("isExist sql: " + statement);
 			ResultSet resultSet = statement.executeQuery();
-			returnConnection(connection);
+			DBUtils.returnConnection(connection);
 			if (resultSet != null) {
 				// System.out.println(StringHelper.RESULT_SET_IS_NOT_NULL_MESSAGE);
 				if (resultSet.next()) {
@@ -233,25 +214,15 @@ public class CompanyDao implements ICompanyDao {
 					}
 					System.out.println("IsCompany not exists with name " + name + ", email " + email);
 					return false;
-
 				}
 			} else {
-				returnConnection(connection);
 				throw new DBException(StringHelper.RESULT_SET_ISNULL_MESSAGE);
 			}
 		} catch (SQLException e) {
+			DBUtils.returnConnection(connection);
 			throw new DBException(StringHelper.COMPANY_EXCEPTION + e.getCause());
 		}
 		throw new DBException("IsCompany exists Exception");
-
-	}
-
-	@Override
-	public void returnConnection(Connection connection) throws DBException {
-		if (connection != null) {
-			ConnectionPool.getInstance().returnConnection(connection);
-			connection = null;
-		}
 
 	}
 
@@ -265,18 +236,16 @@ public class CompanyDao implements ICompanyDao {
 			statement.setString(2, password);
 			System.out.println("login sql: " + statement);
 			ResultSet resultSet = statement.executeQuery();
-			returnConnection(connection);
+			DBUtils.returnConnection(connection);
 			if (resultSet != null) {
-				// System.out.println(StringHelper.RESULT_SET_IS_NOT_NULL_MESSAGE);
 				if (resultSet.next()) {
-					return resultSetToCompany(resultSet);
-
+					return CompanyUtil.resultSetToCompany(resultSet);
 				}
 			} else {
-				returnConnection(connection);
 				throw new DBException(StringHelper.RESULT_SET_ISNULL_MESSAGE);
 			}
 		} catch (SQLException e) {
+			DBUtils.returnConnection(connection);
 			throw new DBException(StringHelper.COMPANY_EXCEPTION + e.getCause());
 		}
 

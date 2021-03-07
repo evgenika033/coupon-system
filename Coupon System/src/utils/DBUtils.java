@@ -33,6 +33,7 @@ public class DBUtils {
 	public static final String TITLE_PLACE_HOLDER = "_TITLE_";
 	public static final String COMPANY_ID_PLACE_HOLDER = "_COMPANY_ID_";
 	public static final String ID_PLACE_HOLDER = "_ID_";
+	public static final String CATEGORY_ID_PLACE_HOLDER = "_CATEGORY_ID_";
 
 	public static void runQuery(String sql) throws DBException {
 		Connection connection = null;
@@ -50,6 +51,13 @@ public class DBUtils {
 			// STEP 5 - Return a connection to the Connection Pool
 			ConnectionPool.getInstance().returnConnection(connection);
 
+		}
+	}
+
+	public static void returnConnection(Connection connection) throws DBException {
+		if (connection != null) {
+			ConnectionPool.getInstance().returnConnection(connection);
+			connection = null;
 		}
 	}
 }

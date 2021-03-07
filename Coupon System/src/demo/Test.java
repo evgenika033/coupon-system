@@ -43,6 +43,10 @@ public class Test {
 		companyFacade.deleteCoupon(6);
 		System.out.println("test get all:");
 		companyFacade.getCompanyCoupons().forEach(c -> System.out.println(c));
+		System.out.println("test get all by categories:");
+		companyFacade.getCompanyCoupons(Category.FOOD).forEach(c -> System.out.println(c));
+		System.out.println("test get all by maxPrice:");
+		companyFacade.getCompanyCoupons(10).forEach(c -> System.out.println(c));
 		ConnectionPool.getInstance().closeAllConnections();
 
 	}

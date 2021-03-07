@@ -19,14 +19,12 @@ import utils.StringHelper;
 public class CustomerDao implements ICustomerDao {
 
 	public CustomerDao() {
-
 	}
 
 	@Override
 	public void add(Customer addObject) throws DBException, ThreadException, MisMatchObjectException {
 		boolean fromUpdate = false;
 		String sql = DBUtils.ADD_CUSTOMER_QUERY;
-
 		// basic validation
 		if (StringHelper.allParametersNotEmpty(addObject, fromUpdate)) {
 			Connection connection = ConnectionPool.getInstance().getConnection();
@@ -36,11 +34,11 @@ public class CustomerDao implements ICustomerDao {
 				statement.setString(3, addObject.getEmail());
 				statement.setString(4, addObject.getPassword());
 				statement.execute();
-				returnConnection(connection);
+				DBUtils.returnConnection(connection);
 				System.out.println(
 						StringHelper.CUSTOMER_ADD_MESSAGE + addObject.getFirstName() + " " + addObject.getLastName());
 			} catch (SQLException e) {
-				returnConnection(connection);
+				DBUtils.returnConnection(connection);
 				throw new DBException(StringHelper.CUSTOMER_ADD_EXCEPTION + e);
 			}
 		}
@@ -53,7 +51,6 @@ public class CustomerDao implements ICustomerDao {
 		String sql = DBUtils.UPDATE_QUERY.replace(DBUtils.TABLE_PLACE_HOLDER, CustomerUtil.TABLE)
 				.replace(DBUtils.PARAMETER_PLACE_HOLDER, CustomerUtil.UPDATE_PARAMETER);
 		if (StringHelper.allParametersNotEmpty(updateObject, fromUpdate)) {
-
 			Connection connection = ConnectionPool.getInstance().getConnection();
 			try (PreparedStatement statement = connection.prepareStatement(sql)) {
 				statement.setString(1, updateObject.getFirstName());
@@ -62,7 +59,7 @@ public class CustomerDao implements ICustomerDao {
 				statement.setString(4, updateObject.getPassword());
 				statement.setInt(5, updateObject.getId());
 				int result = statement.executeUpdate();
-				returnConnection(connection);
+				DBUtils.returnConnection(connection);
 				if (result > 0) {
 					System.out.println(StringHelper.CUSTOMER_UPDATE_MESSAGE + updateObject.getFirstName() + " "
 							+ updateObject.getLastName());
@@ -71,7 +68,7 @@ public class CustomerDao implements ICustomerDao {
 							+ updateObject.getLastName());
 				}
 			} catch (SQLException e) {
-				returnConnection(connection);
+				DBUtils.returnConnection(connection);
 				throw new DBException(StringHelper.CUSTOMER_UPDATE_EXCEPTION + e);
 			}
 		}
@@ -144,14 +141,14 @@ public class CustomerDao implements ICustomerDao {
 			statement.setInt(1, id);
 			System.out.println("delete sql: " + statement);
 			int result = statement.executeUpdate();
-			returnConnection(connection);
+			DBUtils.returnConnection(connection);
 			if (result > 0) {
 				System.out.println(StringHelper.CUSTOMER_DELETE_MESSAGE);
 			} else {
 				System.out.println(StringHelper.CUSTOMER_DELETE_FAILED_MESSAGE);
 			}
 		} catch (SQLException e) {
-			returnConnection(connection);
+			DBUtils.returnConnection(connection);
 			throw new DBException(StringHelper.CUSTOMER_DELETE_EXCEPTION + e);
 		}
 
@@ -166,17 +163,16 @@ public class CustomerDao implements ICustomerDao {
 		try (PreparedStatement statement = connection.prepareStatement(sql)) {
 			statement.setInt(1, id);
 			ResultSet resultSet = statement.executeQuery();
-			returnConnection(connection);
+			DBUtils.returnConnection(connection);
 			if (resultSet != null) {
 				if (resultSet.next()) {
-					customer = resultSetToCustomer(resultSet);
+					customer = CustomerUtil.resultSetToCustomer(resultSet);
 				}
 			} else {
-
 				System.out.println(StringHelper.RESULT_SET_ISNULL_MESSAGE);
 			}
 		} catch (SQLException e) {
-			returnConnection(connection);
+			DBUtils.returnConnection(connection);
 			throw new DBException(StringHelper.CUSTOMER_GET_EXCEPTION + e);
 		}
 		return customer;
@@ -188,30 +184,17 @@ public class CustomerDao implements ICustomerDao {
 		try (PreparedStatement statement = connection.prepareStatement(sql)) {
 			System.out.println("getCount sql: " + statement);
 			ResultSet resultSet = statement.executeQuery();
-			returnConnection(connection);
+			DBUtils.returnConnection(connection);
 			System.out.println(StringHelper.RESULT_SET_IS_NOT_NULL_MESSAGE);
 			if (resultSet.next()) {
 				return resultSet.getInt(1);
 			}
 		} catch (SQLException e) {
+			DBUtils.returnConnection(connection);
 			throw new DBException(StringHelper.COMPANY_EXCEPTION + e);
 		}
 		return 0;
 
-	}
-
-	private Customer resultSetToCustomer(ResultSet resultSet) throws DBException {
-		try {
-			int id = resultSet.getInt(1);
-			String firstName = resultSet.getString(2);
-			String lastName = resultSet.getString(3);
-			String email = resultSet.getString(4);
-			String password = resultSet.getString(5);
-			return new Customer(id, firstName, lastName, email, password);
-		} catch (SQLException e) {
-			throw new DBException(StringHelper.RESULTSET_EXCEPTION + e);
-
-		}
 	}
 
 	@Override
@@ -220,26 +203,23 @@ public class CustomerDao implements ICustomerDao {
 		String sql = DBUtils.GET_ALL_QUERY.replace(DBUtils.TABLE_PLACE_HOLDER, CustomerUtil.TABLE);
 		System.out.println("get all Query: " + sql);
 		Connection connection = ConnectionPool.getInstance().getConnection();
-
 		try (PreparedStatement statement = connection.prepareStatement(sql)) {
 			ResultSet resultSet = statement.executeQuery();
-			returnConnection(connection);
+			DBUtils.returnConnection(connection);
 			if (resultSet != null) {
 				System.out.println(StringHelper.RESULT_SET_IS_NOT_NULL_MESSAGE);
 				while (resultSet.next()) {
-
-					Customer customer = resultSetToCustomer(resultSet);
+					Customer customer = CustomerUtil.resultSetToCustomer(resultSet);
 					customers.add(customer);
 				}
 			} else {
 				System.out.println(StringHelper.RESULT_SET_ISNULL_MESSAGE);
 			}
 		} catch (SQLException e) {
-			returnConnection(connection);
+			DBUtils.returnConnection(connection);
 			throw new DBException(StringHelper.CUSTOMER_GET_EXCEPTION + e);
 		}
 		return customers;
-
 	}
 
 	@Override
@@ -249,29 +229,21 @@ public class CustomerDao implements ICustomerDao {
 		Connection connection = ConnectionPool.getInstance().getConnection();
 		try (PreparedStatement statement = connection.prepareStatement(sql)) {
 			ResultSet resultSet = statement.executeQuery();
-			returnConnection(connection);
+			DBUtils.returnConnection(connection);
 			if (resultSet != null) {
 				System.out.println(StringHelper.RESULT_SET_IS_NOT_NULL_MESSAGE);
 				while (resultSet.next()) {
-					Customer customer = resultSetToCustomer(resultSet);
+					Customer customer = CustomerUtil.resultSetToCustomer(resultSet);
 					customers.add(customer);
 				}
 			} else {
 				System.out.println(StringHelper.RESULT_SET_ISNULL_MESSAGE);
 			}
 		} catch (SQLException e) {
-			returnConnection(connection);
+			DBUtils.returnConnection(connection);
 			throw new DBException(StringHelper.CUSTOMER_GET_EXCEPTION + e);
 		}
 		return customers;
-	}
-
-	@Override
-	public void returnConnection(Connection connection) throws DBException {
-		if (connection != null) {
-			ConnectionPool.getInstance().returnConnection(connection);
-			connection = null;
-		}
 	}
 
 	@Override
@@ -282,7 +254,7 @@ public class CustomerDao implements ICustomerDao {
 		try (PreparedStatement statement = connection.prepareStatement(sql)) {
 			statement.setString(1, email);
 			ResultSet resultSet = statement.executeQuery();
-			returnConnection(connection);
+			DBUtils.returnConnection(connection);
 			if (resultSet != null) {
 				// System.out.println(StringHelper.RESULT_SET_IS_NOT_NULL_MESSAGE);
 				if (resultSet.next()) {
@@ -292,15 +264,12 @@ public class CustomerDao implements ICustomerDao {
 					}
 					System.out.println(StringHelper.CUSTOMER_EXISTS_FALSE_MESSAGE + email);
 					return false;
-
 				}
 			} else {
-
 				throw new DBException(StringHelper.RESULT_SET_ISNULL_MESSAGE);
 			}
 		} catch (SQLException e) {
-			returnConnection(connection);
-			// have to do customer Exception...
+			DBUtils.returnConnection(connection);
 			throw new DBException(StringHelper.CUSTOMER_GET_EXCEPTION + e);
 		}
 		throw new DBException(StringHelper.CUSTOMER_EXISTS_EXCEPTION);

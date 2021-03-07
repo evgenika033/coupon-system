@@ -1,6 +1,5 @@
 package dao;
 
-import java.sql.Connection;
 import java.util.List;
 
 import exception.DBException;
@@ -25,6 +24,6 @@ public interface IDaoCRUD<T> {
 
 	int getCount(String sql) throws DBException, ThreadException;
 
-	void returnConnection(Connection connection) throws DBException;
+	// void returnConnection(Connection connection) throws DBException;
 
 }
