@@ -71,6 +71,48 @@ public class CouponUtil {
 		return coupons;
 	}
 
+	public static int executeUpdate(String sql, Map<Integer, Object> parameters) throws ThreadException, DBException {
+		Connection connection = ConnectionPool.getInstance().getConnection();
+		try (PreparedStatement statement = connection.prepareStatement(sql)) {
+			parameters.entrySet().forEach(p -> {
+				if (p.getValue() instanceof String) {
+					try {
+						statement.setString(p.getKey().intValue(), (String) p.getValue());
+					} catch (SQLException e) {
+						System.err.println("setString exception: " + e);
+					}
+				} else if (p.getValue() instanceof Integer) {
+					try {
+						statement.setInt(p.getKey().intValue(), ((Integer) p.getValue()).intValue());
+					} catch (SQLException e) {
+						System.err.println("setInt exception: " + e);
+					}
+				} else if (p.getValue() instanceof Double) {
+					try {
+						statement.setDouble(p.getKey().intValue(), ((Double) p.getValue()).doubleValue());
+					} catch (SQLException e) {
+						System.err.println("setDouble exception: " + e);
+					}
+				} else if (p.getValue() instanceof LocalDate) {
+					try {
+						statement.setDate(p.getKey().intValue(),
+								(DateTimeUtil.convertLocalDate2SQLDate((LocalDate) p.getValue())));
+					} catch (SQLException e) {
+						System.err.println("setSQL exception: " + e);
+					}
+				}
+			});
+			System.out.println("get sql: " + statement);
+			int resultInt = statement.executeUpdate();
+			DBUtils.returnConnection(connection);
+			return resultInt;
+		} catch (SQLException e) {
+			DBUtils.returnConnection(connection);
+			throw new DBException(StringHelper.COUPON_ADD_EXCEPTION + e);
+		}
+
+	}
+
 	public static Coupon resultSetToCoupon(ResultSet resultSet) throws DBException {
 		try {
 			int id = resultSet.getInt(1);

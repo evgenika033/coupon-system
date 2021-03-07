@@ -51,7 +51,11 @@ public class CompanyFacade extends ClientFacade {
 	}
 
 	public void deleteCoupon(int couponID) throws DBException, ThreadException {
-		couponDao.delete(couponID);
+		String sql = DBUtils.DELETE_QUERY.replace(DBUtils.TABLE_PLACE_HOLDER, CouponUtil.TABLE)
+				.replace(DBUtils.PARAMETER_PLACE_HOLDER, CouponUtil.PARAMETER_ID);
+		Map<Integer, Object> parameters = new HashMap<Integer, Object>();
+		parameters.put(Integer.valueOf(1), Integer.valueOf(couponID));
+		couponDao.delete(sql, parameters);
 	}
 
 	// all coupons of specific company

@@ -4,9 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -114,6 +112,16 @@ public class CouponDao implements ICouponDao {
 
 	}
 
+	public void delete(String sql, Map<Integer, Object> parameters) throws DBException, ThreadException {
+		int resultInt = CouponUtil.executeUpdate(sql, parameters);
+		if (resultInt > 0) {
+			System.out.println(StringHelper.COUPON_DELETE_MESSAGE);
+		} else {
+			System.out.println(StringHelper.COUPON_DELETE_FAILED_MESSAGE);
+		}
+
+	}
+
 	@Override
 	public Coupon get(int id) throws DBException, ThreadException {
 		Coupon coupon = null;
@@ -196,50 +204,6 @@ public class CouponDao implements ICouponDao {
 			throws ThreadException, DBException, SQLException {
 		List<Coupon> coupons = CouponUtil.executeQuery(sql, parameters);
 		return coupons;
-	}
-
-	public int executeUpdate(String sql, Map<Integer, String> parameters) throws ThreadException, DBException {
-		Map<Integer, Object> pars = new HashMap<Integer, Object>();
-		Connection connection = ConnectionPool.getInstance().getConnection();
-		try (PreparedStatement statement = connection.prepareStatement(sql)) {
-			System.out.println("get sql: " + statement);
-
-			pars.entrySet().forEach(p -> {
-				if (p.getValue() instanceof String) {
-					try {
-						statement.setString(p.getKey().intValue(), (String) p.getValue());
-					} catch (SQLException e) {
-						System.err.println("setString exception: " + e);
-					}
-				} else if (p.getValue() instanceof Integer) {
-					try {
-						statement.setInt(p.getKey().intValue(), ((Integer) p.getValue()).intValue());
-					} catch (SQLException e) {
-						System.err.println("setInt exception: " + e);
-					}
-				} else if (p.getValue() instanceof Double) {
-					try {
-						statement.setDouble(p.getKey().intValue(), ((Double) p.getValue()).doubleValue());
-					} catch (SQLException e) {
-						System.err.println("setDouble exception: " + e);
-					}
-				} else if (p.getValue() instanceof LocalDate) {
-					try {
-						statement.setDate(p.getKey().intValue(),
-								(DateTimeUtil.convertLocalDate2SQLDate((LocalDate) p.getValue())));
-					} catch (SQLException e) {
-						System.err.println("setSQL exception: " + e);
-					}
-				}
-			});
-			int resultInt = statement.executeUpdate();
-			DBUtils.returnConnection(connection);
-			return resultInt;
-		} catch (SQLException e) {
-			DBUtils.returnConnection(connection);
-			throw new DBException(StringHelper.COUPON_ADD_EXCEPTION + e);
-		}
-
 	}
 
 	@Override

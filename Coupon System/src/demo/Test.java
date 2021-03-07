@@ -11,12 +11,12 @@ import beans.Coupon;
 import beans.Customer;
 import connection.ConnectionPool;
 import dao.CompanyDao;
-import dao.CouponDao;
 import dao.CustomerDao;
 import exception.DBException;
 import exception.MisMatchObjectException;
 import exception.ThreadException;
 import facades.CompanyFacade;
+import facades.CustomerFacade;
 
 public class Test {
 
@@ -24,9 +24,22 @@ public class Test {
 			LoginException, MisMatchObjectException {
 		// checkCompany();
 		// checkCustomer();
-		// int companyID, Category category, String title, String description, LocalDate
-		// startDate,
-		// LocalDate endDate, int amount, double price, String image
+		// checkCouponFacade();
+		CustomerFacade customerFacade = new CustomerFacade();
+		System.out.println("test customer login ");
+		System.out.println("login result " + customerFacade.login("aa@", "123"));
+		System.out.println("test Customer Details ");
+		Customer customer = customerFacade.getCustomerDetails();
+		System.out.println(customer);
+		ConnectionPool.getInstance().closeAllConnections();
+
+	}
+
+	private static void checkCouponFacade()
+			throws DBException, ThreadException, LoginException, MisMatchObjectException, SQLException {
+//		Coupon coupon = new Coupon(4, Category.ELECTRICITY, "title2", "description", LocalDate.of(2021, 02, 01),
+//				LocalDate.of(2021, 07, 01), 10, 5.10, "eert");
+//		
 		CompanyFacade companyFacade = new CompanyFacade();
 		System.out.println("test login");
 		System.out.println("login result " + companyFacade.login("Versis@com", "1234"));
@@ -40,33 +53,13 @@ public class Test {
 		System.out.println("test update  coupon ");
 		companyFacade.updateCoupon(coupon);
 		System.out.println("test delete:");
-		companyFacade.deleteCoupon(6);
+		companyFacade.deleteCoupon(10);
 		System.out.println("test get all:");
 		companyFacade.getCompanyCoupons().forEach(c -> System.out.println(c));
 		System.out.println("test get all by categories:");
 		companyFacade.getCompanyCoupons(Category.FOOD).forEach(c -> System.out.println(c));
 		System.out.println("test get all by maxPrice:");
 		companyFacade.getCompanyCoupons(10).forEach(c -> System.out.println(c));
-		ConnectionPool.getInstance().closeAllConnections();
-
-	}
-
-	private static void checkCoupon() throws DBException, ThreadException {
-		Coupon coupon = new Coupon(4, Category.ELECTRICITY, "title2", "description", LocalDate.of(2021, 02, 01),
-				LocalDate.of(2021, 07, 01), 10, 5.10, "eert");
-		CouponDao couponDao = new CouponDao();
-		// couponDao.add(coupon);
-		couponDao.delete(3);
-		System.out.println("test get");
-		System.out.println(couponDao.get(4));
-		System.out.println("test getAll");
-		couponDao.get().forEach(c -> System.out.println(c));
-		couponDao.deleteCouponPurchase(1, 4);
-		System.out.println("test delete CouponPurchase: ");
-		System.out.println();
-		// couponDao.addCouponPurchase(2, 4);
-		// System.out.println("validate: " + couponDao.isValid(coupon, false));
-		// System.out.println(Category.ELECTRICITY.ordinal());
 	}
 
 	private static void checkCustomer() throws DBException, ThreadException {

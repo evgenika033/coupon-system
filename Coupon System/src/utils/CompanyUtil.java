@@ -18,7 +18,6 @@ public class CompanyUtil {
 	public static final String TABLE = "company";
 	public static final String PARAMETER_ID = "id=?";
 	public static final String UPDATE_EMAIL_PASSWORD_PARAMETER = "`email`=?,`password` = ?";
-	public static final String GET_EMAIL_PASSWORD_PARAMETER = "`email`=? and `password` = ?";
 
 	public static List<Company> executeQuery(String sql, Map<Integer, Object> parameters)
 			throws ThreadException, DBException, SQLException {

@@ -229,7 +229,7 @@ public class CompanyDao implements ICompanyDao {
 	@Override
 	public Company login(String email, String password) throws ThreadException, DBException {
 		String sql = DBUtils.GET_ONE_QUERY.replace(DBUtils.TABLE_PLACE_HOLDER, CompanyUtil.TABLE)
-				.replace(DBUtils.PARAMETER_PLACE_HOLDER, CompanyUtil.GET_EMAIL_PASSWORD_PARAMETER);
+				.replace(DBUtils.PARAMETER_PLACE_HOLDER, DBUtils.GET_EMAIL_PASSWORD_PARAMETER);
 		Connection connection = ConnectionPool.getInstance().getConnection();
 		try (PreparedStatement statement = connection.prepareStatement(sql)) {
 			statement.setString(1, email);
@@ -246,7 +246,7 @@ public class CompanyDao implements ICompanyDao {
 			}
 		} catch (SQLException e) {
 			DBUtils.returnConnection(connection);
-			throw new DBException(StringHelper.COMPANY_EXCEPTION + e.getCause());
+			throw new DBException(StringHelper.COMPANY_EXCEPTION + e);
 		}
 
 		return null;

@@ -17,6 +17,7 @@ public class DBUtils {
 	public static final String UPDATE_QUERY = "UPDATE _TABLE_ SET _PARAMETER_ WHERE (`id` = ?)";
 	public static final String IS_OTHER_COMPANY_EXISTS_QUERY = "SELECT count(*) FROM company where  `email`='_EMAIL_' and not `id`='_ID_'";
 	public static final String IS_OTHER_CUSTOMER_EXISTS_QUERY = "SELECT count(*) FROM customer where  `email`=? and not `id`=?";
+	public static final String GET_EMAIL_PASSWORD_PARAMETER = "`email`=? and `password` = ?";
 
 	public static final String ADD_CUSTOMER_QUERY = "INSERT INTO `customer` (`first_name`, `last_name`, `email`, `password`) VALUES (?, ?, ?, ?)";
 	public static final String IS_CUSTOMER_EXISTS_QUERY = "SELECT count(*) FROM customer where `email`=?";

@@ -14,6 +14,7 @@ public class StringHelper {
 	public static final String COUPON_ADD_MESSAGE = "The coupon  added: ";
 	public static final String COUPON_UPDATE_MESSAGE = "Update coupon success: ";
 	public static final String COUPON_DELETE_MESSAGE = "The coupon deleted successfully";
+	public static final String COUPON_DELETE_FAILED_MESSAGE = "The coupon deleted failed";
 	public static final String COUPONPURCHASE_ADD_MESSAGE = "The couponPurchase  added: ";
 	public static final String COUPONPURCHASE_DELETE_MESSAGE = "The couponPurchase deleted: ";
 	public static final String COUPON_EXIST_MESSAGE = "isCoupon exists with title %s, companyID %s";

@@ -2,6 +2,8 @@ package facades;
 
 import java.util.List;
 
+import javax.security.auth.login.LoginException;
+
 import beans.Category;
 import beans.Coupon;
 import beans.Customer;
@@ -17,9 +19,13 @@ public class CustomerFacade extends ClientFacade {
 	}
 
 	@Override
-	public boolean login(String email, String password) {
-		// TODO Auto-generated method stub
-		return false;
+	public boolean login(String email, String password) throws ThreadException, DBException, LoginException {
+		Customer customer = customerDao.login(email, password);
+		if (customer != null) {
+			customerID = customer.getId();
+			return true;
+		}
+		throw new LoginException("Login failed ");
 	}
 
 	public void purchaseCoupon(Coupon coupon) {

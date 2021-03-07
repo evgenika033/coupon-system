@@ -276,4 +276,29 @@ public class CustomerDao implements ICustomerDao {
 
 	}
 
+	@Override
+	public Customer login(String email, String password) throws ThreadException, DBException {
+		String sql = DBUtils.GET_ONE_QUERY.replace(DBUtils.TABLE_PLACE_HOLDER, CustomerUtil.TABLE)
+				.replace(DBUtils.PARAMETER_PLACE_HOLDER, DBUtils.GET_EMAIL_PASSWORD_PARAMETER);
+		Connection connection = ConnectionPool.getInstance().getConnection();
+		try (PreparedStatement statement = connection.prepareStatement(sql)) {
+			statement.setString(1, email);
+			statement.setString(2, password);
+			System.out.println("login sql: " + statement);
+			ResultSet resultSet = statement.executeQuery();
+			DBUtils.returnConnection(connection);
+			if (resultSet != null) {
+				if (resultSet.next()) {
+					return CustomerUtil.resultSetToCustomer(resultSet);
+				}
+			} else {
+				throw new DBException(StringHelper.RESULT_SET_ISNULL_MESSAGE);
+			}
+		} catch (SQLException e) {
+			DBUtils.returnConnection(connection);
+			throw new DBException(StringHelper.CUSTOMER_GET_EXCEPTION + e);
+		}
+
+		return null;
+	}
 }
