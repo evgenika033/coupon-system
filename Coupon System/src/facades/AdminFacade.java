@@ -80,7 +80,7 @@ public class AdminFacade extends ClientFacade {
 				Company existsCompany = companyDao.get(company.getId());
 				// check for other company (with different ID)and the same email
 				if (existsCompany != null && existsCompany.getName().equals(company.getName())) {
-					String sql = DBUtils.IS_OTHER_COMPANY_EXISTS_QUERY
+					String sql = ""// DBUtils.IS_OTHER_COMPANY_EXISTS_QUERY
 							.replace(DBUtils.EMAIL_PLACE_HOLDER, existsCompany.getEmail())
 							.replace(DBUtils.ID_PLACE_HOLDER, String.valueOf(existsCompany.getId()));
 					if (companyDao.getCount(sql) == 0) {

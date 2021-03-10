@@ -178,7 +178,6 @@ public class CustomerDao implements ICustomerDao {
 		return customer;
 	}
 
-	@Override
 	public int getCount(String sql) throws DBException, ThreadException {
 		Connection connection = ConnectionPool.getInstance().getConnection();
 		try (PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -222,7 +221,6 @@ public class CustomerDao implements ICustomerDao {
 		return customers;
 	}
 
-	@Override
 	public List<Customer> get(String sql) throws DBException, ThreadException {
 		List<Customer> customers = new ArrayList<Customer>();
 		System.out.println("get all Query: " + sql);
@@ -249,7 +247,7 @@ public class CustomerDao implements ICustomerDao {
 	@Override
 	public boolean isExists(String email) throws ThreadException, DBException {
 
-		String sql = DBUtils.IS_CUSTOMER_EXISTS_QUERY;
+		String sql = "";// DBUtils.IS_CUSTOMER_EXISTS_QUERY;
 		Connection connection = ConnectionPool.getInstance().getConnection();
 		try (PreparedStatement statement = connection.prepareStatement(sql)) {
 			statement.setString(1, email);

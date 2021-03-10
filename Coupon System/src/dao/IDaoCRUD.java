@@ -1,5 +1,6 @@
 package dao;
 
+import java.sql.SQLException;
 import java.util.List;
 
 import exception.DBException;
@@ -15,14 +16,12 @@ public interface IDaoCRUD<T> {
 	void delete(int id) throws DBException, ThreadException;
 
 	// return one object
-	T get(int id) throws DBException, ThreadException;
+	T get(int id) throws DBException, ThreadException, SQLException, MisMatchObjectException;
 
 	// return collection
-	List<T> get() throws DBException, ThreadException;
+	List<T> get() throws DBException, ThreadException, SQLException;
 
-	List<T> get(String sql) throws DBException, ThreadException;
-
-	int getCount(String sql) throws DBException, ThreadException;
+	// List<T> get(String sql) throws DBException, ThreadException;
 
 	// void returnConnection(Connection connection) throws DBException;
 

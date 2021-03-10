@@ -1,9 +1,7 @@
 package facades;
 
 import java.sql.SQLException;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.security.auth.login.LoginException;
 
@@ -13,8 +11,6 @@ import beans.Coupon;
 import exception.DBException;
 import exception.MisMatchObjectException;
 import exception.ThreadException;
-import utils.CouponUtil;
-import utils.DBUtils;
 import utils.StringHelper;
 
 public class CompanyFacade extends ClientFacade {
@@ -34,7 +30,7 @@ public class CompanyFacade extends ClientFacade {
 		throw new LoginException("Login failed ");
 	}
 
-	public void addCoupon(Coupon coupon) throws DBException, ThreadException, MisMatchObjectException {
+	public void addCoupon(Coupon coupon) throws DBException, ThreadException, MisMatchObjectException, SQLException {
 		boolean fromUpdate = false;// the flag that means coupon (is a Flag that means "i from update" in
 									// add=false);
 		if (isValid(coupon, fromUpdate)) {
@@ -42,7 +38,7 @@ public class CompanyFacade extends ClientFacade {
 		}
 	}
 
-	public void updateCoupon(Coupon coupon) throws DBException, ThreadException, MisMatchObjectException {
+	public void updateCoupon(Coupon coupon) throws DBException, ThreadException, MisMatchObjectException, SQLException {
 		boolean fromUpdate = true;
 		if (isValid(coupon, fromUpdate)) {
 			couponDao.update(coupon);
@@ -51,40 +47,22 @@ public class CompanyFacade extends ClientFacade {
 	}
 
 	public void deleteCoupon(int couponID) throws DBException, ThreadException {
-		String sql = DBUtils.DELETE_QUERY.replace(DBUtils.TABLE_PLACE_HOLDER, CouponUtil.TABLE)
-				.replace(DBUtils.PARAMETER_PLACE_HOLDER, CouponUtil.PARAMETER_ID);
-		Map<Integer, Object> parameters = new HashMap<Integer, Object>();
-		parameters.put(Integer.valueOf(1), Integer.valueOf(couponID));
-		couponDao.delete(sql, parameters);
+		couponDao.delete(couponID);
 	}
 
 	// all coupons of specific company
-	public List<Coupon> getCompanyCoupons() throws DBException, ThreadException, SQLException {
-		String sql = DBUtils.GET_ONE_QUERY.replace(DBUtils.TABLE_PLACE_HOLDER, CouponUtil.TABLE)
-				.replace(DBUtils.PARAMETER_PLACE_HOLDER, CouponUtil.GET_BY_COMPANY_ID);
-		Map<Integer, Object> parameters = new HashMap<Integer, Object>();
-		parameters.put(Integer.valueOf(1), Integer.valueOf(companyID));
-		return couponDao.get(sql, parameters);
+	public List<Coupon> getCompanyCoupons() throws DBException, ThreadException, SQLException, MisMatchObjectException {
+		return couponDao.getByCompany(companyID);
 	}
 
-	public List<Coupon> getCompanyCoupons(Category category) throws DBException, ThreadException, SQLException {
-		String sql = DBUtils.GET_ONE_QUERY.replace(DBUtils.TABLE_PLACE_HOLDER, CouponUtil.TABLE)
-				.replace(DBUtils.PARAMETER_PLACE_HOLDER, CouponUtil.GET_BY_COMPANY_ID_AND_CATEGORY);
-		Map<Integer, Object> parameters = new HashMap<Integer, Object>();
-		parameters.put(Integer.valueOf(1), Integer.valueOf(companyID));
-		// ordinal starts with 0, but DB id starts with 1. for this need add 1
-		parameters.put(Integer.valueOf(2), Integer.valueOf(category.ordinal() + 1));
-		return couponDao.get(sql, parameters);
+	public List<Coupon> getCompanyCoupons(Category category)
+			throws DBException, ThreadException, SQLException, MisMatchObjectException {
+
+		return couponDao.getByCategory(companyID, category);
 	}
 
 	public List<Coupon> getCompanyCoupons(double maxPrice) throws DBException, ThreadException, SQLException {
-		String sql = DBUtils.GET_ONE_QUERY.replace(DBUtils.TABLE_PLACE_HOLDER, CouponUtil.TABLE)
-				.replace(DBUtils.PARAMETER_PLACE_HOLDER, CouponUtil.GET_BY_COMPANY_ID_AND_MAX_PRICE);
-		Map<Integer, Object> parameters = new HashMap<Integer, Object>();
-		parameters.put(Integer.valueOf(1), Integer.valueOf(companyID));
-		parameters.put(Integer.valueOf(2), Double.valueOf(maxPrice));
-		return couponDao.get(sql, parameters);
-
+		return couponDao.get(companyID, maxPrice);
 	}
 
 	public Company getCompanyDetails() throws ThreadException, DBException {
@@ -93,7 +71,7 @@ public class CompanyFacade extends ClientFacade {
 	}
 
 	public boolean isValid(Coupon coupon, boolean fromUpdate)
-			throws DBException, ThreadException, MisMatchObjectException {
+			throws DBException, ThreadException, MisMatchObjectException, SQLException {
 		System.out.println("\r\nstart validation:");
 		if (StringHelper.allParametersNotEmpty(coupon, fromUpdate)) {
 			// add validation
@@ -105,11 +83,8 @@ public class CompanyFacade extends ClientFacade {
 				}
 				// update validation
 			} else {
-				String sql = DBUtils.IS_OTHER_COUPON_EXISTS_QUERY.replace(DBUtils.TITLE_PLACE_HOLDER, coupon.getTitle())
-						.replace(DBUtils.ID_PLACE_HOLDER, String.valueOf(coupon.getId()))
-						.replace(DBUtils.COMPANY_ID_PLACE_HOLDER, String.valueOf(coupon.getCompanyID()));
 
-				if (couponDao.getCount(sql) == 0) {
+				if (!couponDao.isOtherExist(coupon.getTitle(), coupon.getCompanyID(), coupon.getId())) {
 					System.out.println("validation ok");
 					return true;
 				}

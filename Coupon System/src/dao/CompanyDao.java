@@ -127,7 +127,6 @@ public class CompanyDao implements ICompanyDao {
 
 	}
 
-	@Override
 	public List<Company> get(String sql) throws DBException, ThreadException {
 		List<Company> companies = new ArrayList<Company>();
 		Connection connection = ConnectionPool.getInstance().getConnection();
@@ -152,7 +151,6 @@ public class CompanyDao implements ICompanyDao {
 		return companies;
 	}
 
-	@Override
 	public int getCount(String sql) throws DBException, ThreadException {
 		Connection connection = ConnectionPool.getInstance().getConnection();
 
@@ -197,7 +195,7 @@ public class CompanyDao implements ICompanyDao {
 
 	@Override
 	public boolean isExists(String name, String email) throws ThreadException, DBException {
-		String sql = DBUtils.IS_COMPANY_EXISTS_QUERY;
+		String sql = "";// DBUtils.IS_COMPANY_EXISTS_QUERY;
 		Connection connection = ConnectionPool.getInstance().getConnection();
 		try (PreparedStatement statement = connection.prepareStatement(sql)) {
 			statement.setString(1, name);

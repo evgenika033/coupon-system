@@ -27,10 +27,12 @@ public class Test {
 		// checkCouponFacade();
 		CustomerFacade customerFacade = new CustomerFacade();
 		System.out.println("test customer login ");
-		System.out.println("login result " + customerFacade.login("aa@", "123"));
+		System.out.println("login result " + customerFacade.login("Shu@", "2555"));
 		System.out.println("test Customer Details ");
 		Customer customer = customerFacade.getCustomerDetails();
 		System.out.println(customer);
+		System.out.println("test Customer coupons ");
+		customerFacade.getCustomerCoupons().forEach(c -> System.out.println(c));
 		ConnectionPool.getInstance().closeAllConnections();
 
 	}

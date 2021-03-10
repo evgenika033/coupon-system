@@ -13,6 +13,7 @@ import beans.Category;
 import beans.Coupon;
 import connection.ConnectionPool;
 import exception.DBException;
+import exception.MisMatchObjectException;
 import exception.ThreadException;
 
 public class CouponUtil {
@@ -22,9 +23,23 @@ public class CouponUtil {
 	public static final String GET_BY_COMPANY_ID = "`company_id` =?";
 	public static final String GET_BY_COMPANY_ID_AND_CATEGORY = "`company_id` =?  and `category_id`=?";
 	public static final String GET_BY_COMPANY_ID_AND_MAX_PRICE = "`company_id` =?  and `price`<?";
+	public static final CharSequence GET_BY_CUSTOMER_ID_AND_MAX_PRICE = "`customer_id` =?  and `price`<?";
+	public static final CharSequence GET_BY_COMPANY_AND_CATEGORY = "`company_id` =?  and `category_id`=?";
+	public static final String GET_OTHER_COUPON_BY_TITLE_AND_COMPANY = "`title`=? and `company_id`=? and not `id`=?";
 
+	/**
+	 * Method for get result like select. Get SQL query and parameters, return
+	 * coupons list
+	 * 
+	 * @param sql
+	 * @param parameters
+	 * @return
+	 * @throws ThreadException
+	 * @throws DBException
+	 * @throws SQLException
+	 */
 	public static List<Coupon> executeQuery(String sql, Map<Integer, Object> parameters)
-			throws ThreadException, DBException, SQLException {
+			throws ThreadException, DBException, SQLException, MisMatchObjectException {
 		List<Coupon> coupons = new ArrayList<Coupon>();
 		Connection connection = ConnectionPool.getInstance().getConnection();
 		try (PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -55,7 +70,10 @@ public class CouponUtil {
 					} catch (SQLException e) {
 						System.err.println("setSQL exception: " + e);
 					}
+				} else {
+					// throw new MisMatchObjectException(StringHelper.MISMATCH_OBJECT_EXCEPTION);
 				}
+
 			});
 			System.out.println("get sql: " + statement);
 			ResultSet resultSet = statement.executeQuery();
@@ -67,6 +85,25 @@ public class CouponUtil {
 		} catch (SQLException e) {
 			DBUtils.returnConnection(connection);
 			throw new DBException(StringHelper.COUPON_ADD_EXCEPTION + e);
+		}
+		return coupons;
+	}
+
+	// get list of coupons without parameters
+	public static List<Coupon> executeQuery(String sql) throws ThreadException, DBException, SQLException {
+		List<Coupon> coupons = new ArrayList<Coupon>();
+		Connection connection = ConnectionPool.getInstance().getConnection();
+		try (PreparedStatement statement = connection.prepareStatement(sql)) {
+			System.out.println("get sql: " + statement);
+			ResultSet resultSet = statement.executeQuery();
+			DBUtils.returnConnection(connection);
+			while (resultSet.next()) {
+				coupons.add(resultSetToCoupon(resultSet));
+			}
+
+		} catch (SQLException e) {
+			DBUtils.returnConnection(connection);
+			throw new DBException(StringHelper.COUPON_GET_EXCEPTION + e);
 		}
 		return coupons;
 	}
@@ -111,6 +148,47 @@ public class CouponUtil {
 			throw new DBException(StringHelper.COUPON_ADD_EXCEPTION + e);
 		}
 
+	}
+
+	public static void execute(String sql, Map<Integer, Object> parameters) throws DBException, ThreadException {
+		Connection connection = ConnectionPool.getInstance().getConnection();
+		try (PreparedStatement statement = connection.prepareStatement(sql)) {
+			parameters.entrySet().forEach(p -> {
+				if (p.getValue() instanceof String) {
+					try {
+						statement.setString(p.getKey().intValue(), (String) p.getValue());
+					} catch (SQLException e) {
+						System.err.println("setString exception: " + e);
+					}
+				} else if (p.getValue() instanceof Integer) {
+					try {
+						statement.setInt(p.getKey().intValue(), ((Integer) p.getValue()).intValue());
+					} catch (SQLException e) {
+						System.err.println("setInt exception: " + e);
+					}
+				} else if (p.getValue() instanceof Double) {
+					try {
+						statement.setDouble(p.getKey().intValue(), ((Double) p.getValue()).doubleValue());
+					} catch (SQLException e) {
+						System.err.println("setDouble exception: " + e);
+					}
+				} else if (p.getValue() instanceof LocalDate) {
+					try {
+						statement.setDate(p.getKey().intValue(),
+								(DateTimeUtil.convertLocalDate2SQLDate((LocalDate) p.getValue())));
+					} catch (SQLException e) {
+						System.err.println("setSQL exception: " + e);
+					}
+				}
+			});
+			System.out.println("add sql: " + statement);
+			statement.execute();
+			DBUtils.returnConnection(connection);
+
+		} catch (SQLException e) {
+			DBUtils.returnConnection(connection);
+			throw new DBException(StringHelper.COUPON_ADD_EXCEPTION + e);
+		}
 	}
 
 	public static Coupon resultSetToCoupon(ResultSet resultSet) throws DBException {

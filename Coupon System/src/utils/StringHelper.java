@@ -25,6 +25,7 @@ public class StringHelper {
 	public static final String CUSTOMER_DELETE_FAILED_MESSAGE = "The customer delete failed.";
 	public static final String CUSTOMER_EXISTS_MESSAGE = "IsCustomer exists with email ";
 	public static final String CUSTOMER_EXISTS_FALSE_MESSAGE = "IsCustomer not exists with email ";
+	public static final String COUPON_NOT_EXISTS_MESSAGE = "isCoupon not exists with title %s, companyID %s";
 	// exception section
 	public static final String COMPANY_EXCEPTION = "get company exception. ";
 	public static final String CONNECTION_EXCEPTION = "open connection failed. ";
@@ -37,12 +38,13 @@ public class StringHelper {
 	public static final String COUPON_ADD_EXCEPTION = "Coupon add Exception";
 	public static final String COUPONPURCHASE_ADD_EXCEPTION = "addCouponPurchase Exception";
 	public static final String COUPONPURCHASE_DELETE_EXCEPTION = "delete CouponPurchase Exception";
-	public static final String COUPON_ISEXISTS_EXCEPTION = "isCoupon not exists with title %s, companyID %s";
+
 	public static final String CUSTOMER_ADD_EXCEPTION = "customer add Exception ";
 	public static final String CUSTOMER_UPDATE_EXCEPTION = "update customer Exception";
 	public static final String CUSTOMER_DELETE_EXCEPTION = "customer delete Exception";
 	public static final String CUSTOMER_GET_EXCEPTION = "customer get Exception";
 	public static final String CUSTOMER_EXISTS_EXCEPTION = "IsCustomer exists Exception ";
+	public static final String MISMATCH_OBJECT_EXCEPTION = "All parameters exception: object mismatch";
 
 	/**
 	 * check all parameters for Coupon/Company/Customer for new or update object.
@@ -95,7 +97,7 @@ public class StringHelper {
 					&& company.getEmail() != null && !company.getEmail().isEmpty() && company.getPassword() != null
 					&& !company.getPassword().isEmpty();
 		}
-		throw new MisMatchObjectException("All parameters exception: object mismatch");
+		throw new MisMatchObjectException(MISMATCH_OBJECT_EXCEPTION);
 	}
 
 }
