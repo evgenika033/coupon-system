@@ -21,7 +21,8 @@ public class CompanyFacade extends ClientFacade {
 	}
 
 	@Override
-	public boolean login(String email, String password) throws ThreadException, DBException, LoginException {
+	public boolean login(String email, String password)
+			throws ThreadException, DBException, LoginException, SQLException {
 		Company company = companyDao.login(email, password);
 		if (company != null) {
 			companyID = company.getId();
@@ -65,8 +66,12 @@ public class CompanyFacade extends ClientFacade {
 		return couponDao.get(companyID, maxPrice);
 	}
 
-	public Company getCompanyDetails() throws ThreadException, DBException {
-		return companyDao.get(companyID);
+	public Company getCompanyDetails() throws ThreadException, DBException, SQLException, MisMatchObjectException {
+		Company company = companyDao.get(companyID);
+		if (company != null) {
+			company.setCoupons(getCompanyCoupons());
+		}
+		return company;
 
 	}
 

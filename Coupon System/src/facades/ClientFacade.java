@@ -1,5 +1,7 @@
 package facades;
 
+import java.sql.SQLException;
+
 import javax.security.auth.login.LoginException;
 
 import dao.CompanyDao;
@@ -13,5 +15,6 @@ public abstract class ClientFacade {
 	protected CustomerDao customerDao = new CustomerDao();
 	protected CouponDao couponDao = new CouponDao();
 
-	public abstract boolean login(String email, String password) throws ThreadException, DBException, LoginException;
+	public abstract boolean login(String email, String password)
+			throws ThreadException, DBException, LoginException, SQLException;
 }

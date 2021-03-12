@@ -27,39 +27,45 @@ public class CouponDao implements ICouponDao {
 		String sql = DBUtils.ADD_COUPON_QUERY;
 		if (StringHelper.allParametersNotEmpty(addObject, fromUpdate)) {
 			Map<Integer, Object> parameters = new HashMap<Integer, Object>();
-			parameters.put(1, Integer.valueOf(addObject.getCompanyID()));
-			parameters.put(2, Integer.valueOf(addObject.getCategory().ordinal()));
+			parameters.put(1, addObject.getCompanyID());
+			parameters.put(2, addObject.getCategory().ordinal());
 			parameters.put(3, addObject.getTitle());
 			parameters.put(4, addObject.getDescription());
 			parameters.put(5, DateTimeUtil.convertLocalDate2SQLDate(addObject.getStartDate()));
 			parameters.put(6, DateTimeUtil.convertLocalDate2SQLDate(addObject.getEndDate()));
-			parameters.put(7, Integer.valueOf(addObject.getAmount()));
-			parameters.put(8, Double.valueOf(addObject.getPrice()));
+			parameters.put(7, addObject.getAmount());
+			parameters.put(8, addObject.getPrice());
 			parameters.put(9, addObject.getImage());
 			CouponUtil.execute(sql, parameters);
+		} else {
+			throw new DBException(StringHelper.VALIDATION_PARAMETERS_ERROR_MESSAGE);
 		}
 	}
 
 	@Override
 	public void update(Coupon updateObject) throws DBException, ThreadException, MisMatchObjectException {
 		boolean fromUpdate = true;
-		String sql = DBUtils.UPDATE_QUERY.replace(DBUtils.TABLE_PLACE_HOLDER, CouponUtil.TABLE)
-				.replace(DBUtils.PARAMETER_PLACE_HOLDER, CouponUtil.UPDATE_PARAMETER);
-		Map<Integer, Object> parameters = new HashMap<Integer, Object>();
-		parameters.put(1, Integer.valueOf(updateObject.getCompanyID()));
-		parameters.put(2, Integer.valueOf(updateObject.getCategory().ordinal()));
-		parameters.put(3, updateObject.getTitle());
-		parameters.put(4, updateObject.getDescription());
-		parameters.put(5, DateTimeUtil.convertLocalDate2SQLDate(updateObject.getStartDate()));
-		parameters.put(6, DateTimeUtil.convertLocalDate2SQLDate(updateObject.getEndDate()));
-		parameters.put(7, Integer.valueOf(updateObject.getAmount()));
-		parameters.put(8, Double.valueOf(updateObject.getPrice()));
-		parameters.put(9, updateObject.getImage());
-		parameters.put(10, Integer.valueOf(updateObject.getId()));
-		int result = CouponUtil.executeUpdate(sql, parameters);
-		if (result > 0) {
-			System.out.println(
-					StringHelper.COUPON_UPDATE_MESSAGE + updateObject.getDescription() + " " + updateObject.getTitle());
+		if (StringHelper.allParametersNotEmpty(updateObject, fromUpdate)) {
+			String sql = DBUtils.UPDATE_QUERY.replace(DBUtils.TABLE_PLACE_HOLDER, CouponUtil.TABLE)
+					.replace(DBUtils.PARAMETER_PLACE_HOLDER, CouponUtil.UPDATE_PARAMETER);
+			Map<Integer, Object> parameters = new HashMap<Integer, Object>();
+			parameters.put(1, updateObject.getCompanyID());
+			parameters.put(2, updateObject.getCategory().ordinal());
+			parameters.put(3, updateObject.getTitle());
+			parameters.put(4, updateObject.getDescription());
+			parameters.put(5, DateTimeUtil.convertLocalDate2SQLDate(updateObject.getStartDate()));
+			parameters.put(6, DateTimeUtil.convertLocalDate2SQLDate(updateObject.getEndDate()));
+			parameters.put(7, updateObject.getAmount());
+			parameters.put(8, updateObject.getPrice());
+			parameters.put(9, updateObject.getImage());
+			parameters.put(10, updateObject.getId());
+			int result = CouponUtil.executeUpdate(sql, parameters);
+			if (result > 0) {
+				System.out.println(StringHelper.COUPON_UPDATE_MESSAGE + updateObject.getDescription() + " "
+						+ updateObject.getTitle());
+			} else {
+				throw new DBException(StringHelper.VALIDATION_PARAMETERS_ERROR_MESSAGE);
+			}
 		}
 
 	}
@@ -69,7 +75,7 @@ public class CouponDao implements ICouponDao {
 		String sql = DBUtils.DELETE_QUERY.replace(DBUtils.TABLE_PLACE_HOLDER, CouponUtil.TABLE)
 				.replace(DBUtils.PARAMETER_PLACE_HOLDER, CouponUtil.PARAMETER_ID);
 		Map<Integer, Object> parameters = new HashMap<Integer, Object>();
-		parameters.put(1, Integer.valueOf(id));
+		parameters.put(1, id);
 		int result = CouponUtil.executeUpdate(sql, parameters);
 		if (result > 0) {
 			System.out.println(StringHelper.COUPON_DELETE_MESSAGE);
@@ -85,7 +91,7 @@ public class CouponDao implements ICouponDao {
 		String sql = DBUtils.GET_ONE_QUERY.replace(DBUtils.TABLE_PLACE_HOLDER, CouponUtil.TABLE)
 				.replace(DBUtils.PARAMETER_PLACE_HOLDER, CouponUtil.PARAMETER_ID);
 		Map<Integer, Object> parameters = new HashMap<Integer, Object>();
-		parameters.put(1, Integer.valueOf(id));
+		parameters.put(1, id);
 		List<Coupon> coupons = CouponUtil.executeQuery(sql, parameters);
 		// function programming: return first element or null
 		return coupons.size() > 0 ? coupons.get(0) : coupon;
@@ -102,8 +108,8 @@ public class CouponDao implements ICouponDao {
 	public void addCouponPurchase(int customerID, int couponID) throws ThreadException, DBException {
 		String sql = DBUtils.ADD_CUSTOMERS_VS_COUPONS_QUERY;
 		Map<Integer, Object> parameters = new HashMap<Integer, Object>();
-		parameters.put(1, Integer.valueOf(customerID));
-		parameters.put(2, Integer.valueOf(couponID));
+		parameters.put(1, customerID);
+		parameters.put(2, couponID);
 		CouponUtil.execute(sql, parameters);
 	}
 
@@ -111,8 +117,8 @@ public class CouponDao implements ICouponDao {
 	public void deleteCouponPurchase(int customerID, int couponID) throws ThreadException, DBException {
 		String sql = DBUtils.DELETE_CUSTOMERS_VS_COUPONS_QUERY;
 		Map<Integer, Object> parameters = new HashMap<Integer, Object>();
-		parameters.put(1, Integer.valueOf(customerID));
-		parameters.put(2, Integer.valueOf(couponID));
+		parameters.put(1, customerID);
+		parameters.put(2, couponID);
 		CouponUtil.execute(sql, parameters);
 	}
 
@@ -121,7 +127,7 @@ public class CouponDao implements ICouponDao {
 		String sql = DBUtils.IS_COUPON_EXISTS_QUERY;
 		Map<Integer, Object> parameters = new HashMap<Integer, Object>();
 		parameters.put(1, coupon.getTitle());
-		parameters.put(2, Integer.valueOf(coupon.getCompanyID()));
+		parameters.put(2, coupon.getCompanyID());
 		List<Coupon> coupons = CouponUtil.executeQuery(sql, parameters);
 		if (coupons.size() > 0) {
 			System.out.println(
@@ -146,7 +152,7 @@ public class CouponDao implements ICouponDao {
 		String sql = DBUtils.GET_ONE_QUERY.replace(DBUtils.TABLE_PLACE_HOLDER, CouponUtil.TABLE)
 				.replace(DBUtils.PARAMETER_PLACE_HOLDER, CouponUtil.GET_BY_COMPANY_ID);
 		Map<Integer, Object> parameters = new HashMap<Integer, Object>();
-		parameters.put(1, Integer.valueOf(companyID));
+		parameters.put(1, companyID);
 		return CouponUtil.executeQuery(sql, parameters);
 	}
 
@@ -157,8 +163,8 @@ public class CouponDao implements ICouponDao {
 				.replace(DBUtils.PARAMETER_PLACE_HOLDER, CouponUtil.GET_BY_COMPANY_AND_CATEGORY);
 
 		Map<Integer, Object> parameters = new HashMap<Integer, Object>();
-		parameters.put(1, Integer.valueOf(companyID));
-		parameters.put(2, Integer.valueOf(category.ordinal() + 1));
+		parameters.put(1, companyID);
+		parameters.put(2, category.ordinal() + 1);
 		return CouponUtil.executeQuery(sql, parameters);
 	}
 
@@ -175,8 +181,8 @@ public class CouponDao implements ICouponDao {
 				.replace(DBUtils.PARAMETER_PLACE_HOLDER, CouponUtil.GET_OTHER_COUPON_BY_TITLE_AND_COMPANY);
 		Map<Integer, Object> parameters = new HashMap<Integer, Object>();
 		parameters.put(1, title);
-		parameters.put(2, Integer.valueOf(companyID));
-		parameters.put(3, Integer.valueOf(couponID));
+		parameters.put(2, companyID);
+		parameters.put(3, couponID);
 		List<Coupon> coupons = CouponUtil.executeQuery(sql, parameters);
 		// functional programming: return exists if size > 0
 		return coupons.size() > 0 ? true : false;
@@ -187,7 +193,7 @@ public class CouponDao implements ICouponDao {
 			throws ThreadException, DBException, SQLException, MisMatchObjectException {
 		String sql = DBUtils.GET_CUSTOMERS_COUPONS_QUERY;
 		Map<Integer, Object> parameters = new HashMap<Integer, Object>();
-		parameters.put(1, Integer.valueOf(customerID));
+		parameters.put(1, customerID);
 		return CouponUtil.executeQuery(sql, parameters);
 	}
 
@@ -196,8 +202,8 @@ public class CouponDao implements ICouponDao {
 			throws ThreadException, DBException, SQLException, MisMatchObjectException {
 		String sql = DBUtils.GET_CUSTOMERS_COUPONS_QUERY;
 		Map<Integer, Object> parameters = new HashMap<Integer, Object>();
-		parameters.put(1, Integer.valueOf(customerID));
-		parameters.put(2, Double.valueOf(maxPrice));
+		parameters.put(1, customerID);
+		parameters.put(2, maxPrice);
 		return CouponUtil.executeQuery(sql, parameters);
 	}
 
@@ -206,8 +212,8 @@ public class CouponDao implements ICouponDao {
 			throws ThreadException, DBException, SQLException, MisMatchObjectException {
 		String sql = DBUtils.GET_CUSTOMERS_COUPONS_CATEGORY_QUERY;
 		Map<Integer, Object> parameters = new HashMap<Integer, Object>();
-		parameters.put(1, Integer.valueOf(customerID));
-		parameters.put(2, Integer.valueOf(category.ordinal() + 1));
+		parameters.put(1, customerID);
+		parameters.put(2, category.ordinal() + 1);
 		return CouponUtil.executeQuery(sql, parameters);
 	}
 }

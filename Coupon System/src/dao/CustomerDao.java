@@ -1,14 +1,11 @@
 package dao;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import beans.Customer;
-import connection.ConnectionPool;
 import exception.DBException;
 import exception.MisMatchObjectException;
 import exception.ThreadException;
@@ -24,23 +21,19 @@ public class CustomerDao implements ICustomerDao {
 	@Override
 	public void add(Customer addObject) throws DBException, ThreadException, MisMatchObjectException {
 		boolean fromUpdate = false;
-		String sql = DBUtils.ADD_CUSTOMER_QUERY;
 		// basic validation
 		if (StringHelper.allParametersNotEmpty(addObject, fromUpdate)) {
-			Connection connection = ConnectionPool.getInstance().getConnection();
-			try (PreparedStatement statement = connection.prepareStatement(sql)) {
-				statement.setString(1, addObject.getFirstName());
-				statement.setString(2, addObject.getLastName());
-				statement.setString(3, addObject.getEmail());
-				statement.setString(4, addObject.getPassword());
-				statement.execute();
-				DBUtils.returnConnection(connection);
-				System.out.println(
-						StringHelper.CUSTOMER_ADD_MESSAGE + addObject.getFirstName() + " " + addObject.getLastName());
-			} catch (SQLException e) {
-				DBUtils.returnConnection(connection);
-				throw new DBException(StringHelper.CUSTOMER_ADD_EXCEPTION + e);
-			}
+			String sql = DBUtils.ADD_CUSTOMER_QUERY;
+			Map<Integer, Object> parameters = new HashMap<Integer, Object>();
+			parameters.put(1, addObject.getFirstName());
+			parameters.put(2, addObject.getLastName());
+			parameters.put(3, addObject.getEmail());
+			parameters.put(4, addObject.getPassword());
+			CustomerUtil.execute(sql, parameters);
+			System.out.println(
+					StringHelper.CUSTOMER_ADD_MESSAGE + addObject.getFirstName() + " " + addObject.getLastName());
+		} else {
+			throw new DBException(StringHelper.VALIDATION_PARAMETERS_ERROR_MESSAGE);
 		}
 
 	}
@@ -48,29 +41,26 @@ public class CustomerDao implements ICustomerDao {
 	@Override
 	public void update(Customer updateObject) throws DBException, ThreadException, MisMatchObjectException {
 		boolean fromUpdate = true;
-		String sql = DBUtils.UPDATE_QUERY.replace(DBUtils.TABLE_PLACE_HOLDER, CustomerUtil.TABLE)
-				.replace(DBUtils.PARAMETER_PLACE_HOLDER, CustomerUtil.UPDATE_PARAMETER);
 		if (StringHelper.allParametersNotEmpty(updateObject, fromUpdate)) {
-			Connection connection = ConnectionPool.getInstance().getConnection();
-			try (PreparedStatement statement = connection.prepareStatement(sql)) {
-				statement.setString(1, updateObject.getFirstName());
-				statement.setString(2, updateObject.getLastName());
-				statement.setString(3, updateObject.getEmail());
-				statement.setString(4, updateObject.getPassword());
-				statement.setInt(5, updateObject.getId());
-				int result = statement.executeUpdate();
-				DBUtils.returnConnection(connection);
-				if (result > 0) {
-					System.out.println(StringHelper.CUSTOMER_UPDATE_MESSAGE + updateObject.getFirstName() + " "
-							+ updateObject.getLastName());
-				} else {
-					System.out.println(StringHelper.CUSTOMER_UPDATE_FAILED_MESSAGE + updateObject.getFirstName() + " "
-							+ updateObject.getLastName());
-				}
-			} catch (SQLException e) {
-				DBUtils.returnConnection(connection);
-				throw new DBException(StringHelper.CUSTOMER_UPDATE_EXCEPTION + e);
+			String sql = DBUtils.UPDATE_QUERY.replace(DBUtils.TABLE_PLACE_HOLDER, CustomerUtil.TABLE)
+					.replace(DBUtils.PARAMETER_PLACE_HOLDER, CustomerUtil.UPDATE_PARAMETER);
+			Map<Integer, Object> parameters = new HashMap<Integer, Object>();
+			parameters.put(1, updateObject.getFirstName());
+			parameters.put(2, updateObject.getLastName());
+			parameters.put(3, updateObject.getEmail());
+			parameters.put(4, updateObject.getPassword());
+			parameters.put(5, updateObject.getId());
+			int result = CustomerUtil.executeUpdate(sql, parameters);
+			if (result > 0) {
+				System.out.println(StringHelper.CUSTOMER_UPDATE_MESSAGE + updateObject.getFirstName() + " "
+						+ updateObject.getLastName());
+			} else {
+				System.out.println(StringHelper.CUSTOMER_UPDATE_FAILED_MESSAGE + updateObject.getFirstName() + " "
+						+ updateObject.getLastName());
 			}
+
+		} else {
+			throw new DBException(StringHelper.VALIDATION_PARAMETERS_ERROR_MESSAGE);
 		}
 
 	}
@@ -136,167 +126,103 @@ public class CustomerDao implements ICustomerDao {
 	public void delete(int id) throws DBException, ThreadException {
 		String sql = DBUtils.DELETE_QUERY.replace(DBUtils.TABLE_PLACE_HOLDER, CustomerUtil.TABLE)
 				.replace(DBUtils.PARAMETER_PLACE_HOLDER, CustomerUtil.PARAMETER_ID);
-		Connection connection = ConnectionPool.getInstance().getConnection();
-		try (PreparedStatement statement = connection.prepareStatement(sql)) {
-			statement.setInt(1, id);
-			System.out.println("delete sql: " + statement);
-			int result = statement.executeUpdate();
-			DBUtils.returnConnection(connection);
-			if (result > 0) {
-				System.out.println(StringHelper.CUSTOMER_DELETE_MESSAGE);
-			} else {
-				System.out.println(StringHelper.CUSTOMER_DELETE_FAILED_MESSAGE);
-			}
-		} catch (SQLException e) {
-			DBUtils.returnConnection(connection);
-			throw new DBException(StringHelper.CUSTOMER_DELETE_EXCEPTION + e);
+		Map<Integer, Object> parameters = new HashMap<Integer, Object>();
+		parameters.put(1, id);
+		int result = CustomerUtil.executeUpdate(sql, parameters);
+		if (result > 0) {
+			System.out.println(StringHelper.CUSTOMER_DELETE_MESSAGE);
+		} else {
+			System.out.println(StringHelper.CUSTOMER_DELETE_FAILED_MESSAGE);
 		}
 
 	}
 
 	@Override
-	public Customer get(int id) throws DBException, ThreadException {
+	public Customer get(int id) throws DBException, ThreadException, SQLException {
 		Customer customer = null;
 		String sql = DBUtils.GET_ONE_QUERY.replace(DBUtils.TABLE_PLACE_HOLDER, CustomerUtil.TABLE)
 				.replace(DBUtils.PARAMETER_PLACE_HOLDER, CustomerUtil.PARAMETER_ID);
-		Connection connection = ConnectionPool.getInstance().getConnection();
-		try (PreparedStatement statement = connection.prepareStatement(sql)) {
-			statement.setInt(1, id);
-			ResultSet resultSet = statement.executeQuery();
-			DBUtils.returnConnection(connection);
-			if (resultSet != null) {
-				if (resultSet.next()) {
-					customer = CustomerUtil.resultSetToCustomer(resultSet);
-				}
-			} else {
-				System.out.println(StringHelper.RESULT_SET_ISNULL_MESSAGE);
-			}
-		} catch (SQLException e) {
-			DBUtils.returnConnection(connection);
-			throw new DBException(StringHelper.CUSTOMER_GET_EXCEPTION + e);
-		}
-		return customer;
-	}
-
-	public int getCount(String sql) throws DBException, ThreadException {
-		Connection connection = ConnectionPool.getInstance().getConnection();
-		try (PreparedStatement statement = connection.prepareStatement(sql)) {
-			System.out.println("getCount sql: " + statement);
-			ResultSet resultSet = statement.executeQuery();
-			DBUtils.returnConnection(connection);
-			System.out.println(StringHelper.RESULT_SET_IS_NOT_NULL_MESSAGE);
-			if (resultSet.next()) {
-				return resultSet.getInt(1);
-			}
-		} catch (SQLException e) {
-			DBUtils.returnConnection(connection);
-			throw new DBException(StringHelper.COMPANY_EXCEPTION + e);
-		}
-		return 0;
+		Map<Integer, Object> parameters = new HashMap<Integer, Object>();
+		parameters.put(1, id);
+		List<Customer> customers = CustomerUtil.executeQuery(sql, parameters);
+		// function programming: return first element or null
+		return customers.size() > 0 ? customers.get(0) : customer;
 
 	}
 
 	@Override
-	public List<Customer> get() throws DBException, ThreadException {
-		List<Customer> customers = new ArrayList<Customer>();
+	public List<Customer> get() throws DBException, ThreadException, SQLException {
 		String sql = DBUtils.GET_ALL_QUERY.replace(DBUtils.TABLE_PLACE_HOLDER, CustomerUtil.TABLE);
-		System.out.println("get all Query: " + sql);
-		Connection connection = ConnectionPool.getInstance().getConnection();
-		try (PreparedStatement statement = connection.prepareStatement(sql)) {
-			ResultSet resultSet = statement.executeQuery();
-			DBUtils.returnConnection(connection);
-			if (resultSet != null) {
-				System.out.println(StringHelper.RESULT_SET_IS_NOT_NULL_MESSAGE);
-				while (resultSet.next()) {
-					Customer customer = CustomerUtil.resultSetToCustomer(resultSet);
-					customers.add(customer);
-				}
-			} else {
-				System.out.println(StringHelper.RESULT_SET_ISNULL_MESSAGE);
-			}
-		} catch (SQLException e) {
-			DBUtils.returnConnection(connection);
-			throw new DBException(StringHelper.CUSTOMER_GET_EXCEPTION + e);
-		}
+		List<Customer> customers = CustomerUtil.executeQuery(sql);
 		return customers;
+
 	}
 
-	public List<Customer> get(String sql) throws DBException, ThreadException {
-		List<Customer> customers = new ArrayList<Customer>();
-		System.out.println("get all Query: " + sql);
-		Connection connection = ConnectionPool.getInstance().getConnection();
-		try (PreparedStatement statement = connection.prepareStatement(sql)) {
-			ResultSet resultSet = statement.executeQuery();
-			DBUtils.returnConnection(connection);
-			if (resultSet != null) {
-				System.out.println(StringHelper.RESULT_SET_IS_NOT_NULL_MESSAGE);
-				while (resultSet.next()) {
-					Customer customer = CustomerUtil.resultSetToCustomer(resultSet);
-					customers.add(customer);
-				}
-			} else {
-				System.out.println(StringHelper.RESULT_SET_ISNULL_MESSAGE);
-			}
-		} catch (SQLException e) {
-			DBUtils.returnConnection(connection);
-			throw new DBException(StringHelper.CUSTOMER_GET_EXCEPTION + e);
-		}
-		return customers;
-	}
+//	public int getCount(String sql) throws DBException, ThreadException {
+//		Connection connection = ConnectionPool.getInstance().getConnection();
+//		try (PreparedStatement statement = connection.prepareStatement(sql)) {
+//			System.out.println("getCount sql: " + statement);
+//			ResultSet resultSet = statement.executeQuery();
+//			DBUtils.returnConnection(connection);
+//			System.out.println(StringHelper.RESULT_SET_IS_NOT_NULL_MESSAGE);
+//			if (resultSet.next()) {
+//				return resultSet.getInt(1);
+//			}
+//		} catch (SQLException e) {
+//			DBUtils.returnConnection(connection);
+//			throw new DBException(StringHelper.COMPANY_EXCEPTION + e);
+//		}
+//		return 0;
+//
+//	}
+
+//	public List<Customer> get(String sql) throws DBException, ThreadException {
+//		List<Customer> customers = new ArrayList<Customer>();
+//		System.out.println("get all Query: " + sql);
+//		Connection connection = ConnectionPool.getInstance().getConnection();
+//		try (PreparedStatement statement = connection.prepareStatement(sql)) {
+//			ResultSet resultSet = statement.executeQuery();
+//			DBUtils.returnConnection(connection);
+//			if (resultSet != null) {
+//				System.out.println(StringHelper.RESULT_SET_IS_NOT_NULL_MESSAGE);
+//				while (resultSet.next()) {
+//					Customer customer = CustomerUtil.resultSetToCustomer(resultSet);
+//					customers.add(customer);
+//				}
+//			} else {
+//				System.out.println(StringHelper.RESULT_SET_ISNULL_MESSAGE);
+//			}
+//		} catch (SQLException e) {
+//			DBUtils.returnConnection(connection);
+//			throw new DBException(StringHelper.CUSTOMER_GET_EXCEPTION + e);
+//		}
+//		return customers;
+//	}
 
 	@Override
-	public boolean isExists(String email) throws ThreadException, DBException {
-
-		String sql = "";// DBUtils.IS_CUSTOMER_EXISTS_QUERY;
-		Connection connection = ConnectionPool.getInstance().getConnection();
-		try (PreparedStatement statement = connection.prepareStatement(sql)) {
-			statement.setString(1, email);
-			ResultSet resultSet = statement.executeQuery();
-			DBUtils.returnConnection(connection);
-			if (resultSet != null) {
-				// System.out.println(StringHelper.RESULT_SET_IS_NOT_NULL_MESSAGE);
-				if (resultSet.next()) {
-					if (resultSet.getInt(1) > 0) {
-						System.out.println(StringHelper.CUSTOMER_EXISTS_MESSAGE + email);
-						return true;
-					}
-					System.out.println(StringHelper.CUSTOMER_EXISTS_FALSE_MESSAGE + email);
-					return false;
-				}
-			} else {
-				throw new DBException(StringHelper.RESULT_SET_ISNULL_MESSAGE);
-			}
-		} catch (SQLException e) {
-			DBUtils.returnConnection(connection);
-			throw new DBException(StringHelper.CUSTOMER_GET_EXCEPTION + e);
+	public boolean isExists(String email) throws ThreadException, DBException, SQLException {
+		String sql = DBUtils.GET_ONE_QUERY.replace(DBUtils.TABLE_PLACE_HOLDER, CustomerUtil.TABLE)
+				.replace(DBUtils.PARAMETER_PLACE_HOLDER, CustomerUtil.PARAMETER_EMAIL);
+		Map<Integer, Object> parameters = new HashMap<Integer, Object>();
+		parameters.put(1, email);
+		List<Customer> customers = CustomerUtil.executeQuery(sql, parameters);
+		if (customers.size() > 0) {
+			return true;
 		}
 		throw new DBException(StringHelper.CUSTOMER_EXISTS_EXCEPTION);
 
 	}
 
 	@Override
-	public Customer login(String email, String password) throws ThreadException, DBException {
+	public Customer login(String email, String password) throws ThreadException, DBException, SQLException {
+		Customer customer = null;
 		String sql = DBUtils.GET_ONE_QUERY.replace(DBUtils.TABLE_PLACE_HOLDER, CustomerUtil.TABLE)
 				.replace(DBUtils.PARAMETER_PLACE_HOLDER, DBUtils.GET_EMAIL_PASSWORD_PARAMETER);
-		Connection connection = ConnectionPool.getInstance().getConnection();
-		try (PreparedStatement statement = connection.prepareStatement(sql)) {
-			statement.setString(1, email);
-			statement.setString(2, password);
-			System.out.println("login sql: " + statement);
-			ResultSet resultSet = statement.executeQuery();
-			DBUtils.returnConnection(connection);
-			if (resultSet != null) {
-				if (resultSet.next()) {
-					return CustomerUtil.resultSetToCustomer(resultSet);
-				}
-			} else {
-				throw new DBException(StringHelper.RESULT_SET_ISNULL_MESSAGE);
-			}
-		} catch (SQLException e) {
-			DBUtils.returnConnection(connection);
-			throw new DBException(StringHelper.CUSTOMER_GET_EXCEPTION + e);
-		}
+		Map<Integer, Object> parameters = new HashMap<Integer, Object>();
+		parameters.put(1, email);
+		parameters.put(2, password);
+		List<Customer> customers = CustomerUtil.executeQuery(sql, parameters);
+		return customers.size() > 0 ? customers.get(0) : customer;
 
-		return null;
 	}
 }

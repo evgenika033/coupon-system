@@ -22,13 +22,14 @@ public class CustomerFacade extends ClientFacade {
 	}
 
 	@Override
-	public boolean login(String email, String password) throws ThreadException, DBException, LoginException {
+	public boolean login(String email, String password)
+			throws ThreadException, DBException, LoginException, SQLException {
 		Customer customer = customerDao.login(email, password);
 		if (customer != null) {
 			customerID = customer.getId();
 			return true;
 		}
-		throw new LoginException("Login failed ");
+		throw new LoginException(StringHelper.LOGIN_EXCEPTION);
 	}
 
 	public void purchaseCoupon(Coupon coupon) throws ThreadException, DBException, MisMatchObjectException {

@@ -25,14 +25,12 @@ public class Test {
 		// checkCompany();
 		// checkCustomer();
 		// checkCouponFacade();
-		CustomerFacade customerFacade = new CustomerFacade();
-		System.out.println("test customer login ");
-		System.out.println("login result " + customerFacade.login("Shu@", "2555"));
-		System.out.println("test Customer Details ");
-		Customer customer = customerFacade.getCustomerDetails();
-		System.out.println(customer);
-		System.out.println("test Customer coupons ");
-		customerFacade.getCustomerCoupons().forEach(c -> System.out.println(c));
+		CompanyFacade companyFacade = new CompanyFacade();
+		System.out.println("test login: ");
+		boolean login = companyFacade.login("Versis2@com", "1234");
+		System.out.println("login is " + login);
+		System.out.println("test company details: ");
+		System.out.println(companyFacade.getCompanyDetails());
 		ConnectionPool.getInstance().closeAllConnections();
 
 	}
@@ -64,11 +62,12 @@ public class Test {
 		companyFacade.getCompanyCoupons(10).forEach(c -> System.out.println(c));
 	}
 
-	private static void checkCustomer() throws DBException, ThreadException {
+	private static void checkCustomer()
+			throws DBException, ThreadException, SQLException, MisMatchObjectException, LoginException {
 		CustomerDao customerDao = new CustomerDao();
 		Customer customer = new Customer("Arik", "Lavi", "lavi@", "2255");
 		// customerDao.add(customer);
-		customer = customerDao.get(2);
+		// customer = customerDao.get(2);
 		System.out.println(customer);
 		customer.setFirstName("Shuki3");
 //		customer.setLastName("Mu");
@@ -76,17 +75,25 @@ public class Test {
 //		customer.setPassword("2555");
 		// customerDao.update(customer);
 		// System.out.println(customerDao.isExists("ww@"));
+		CustomerFacade customerFacade = new CustomerFacade();
+		System.out.println("test customer login ");
+		System.out.println("login result " + customerFacade.login("Shu@", "2555"));
+		System.out.println("test Customer Details ");
+		customer = customerFacade.getCustomerDetails();
+		System.out.println(customer);
+		System.out.println("test Customer coupons ");
+		customerFacade.getCustomerCoupons().forEach(c -> System.out.println(c));
 	}
 
 	private static void checkCompany() throws ThreadException, DBException {
 		CompanyDao companyDao = new CompanyDao();
-		Company company = companyDao.get(1);
-		System.out.println(company);
-		company.setEmail("change@");
+		// Company company = companyDao.get(1);
+		// System.out.println(company);
+		// company.setEmail("change@");
 		// companyDao.update(company);
-		company = companyDao.get(1);
-		System.out.println(company);
-		System.out.println(companyDao.get());
+		// company = companyDao.get(1);
+		// System.out.println(company);
+		// System.out.println(companyDao.get());
 //		company = new Company("Versis37", "Versis5@com", null);
 //		companyDao.add(company);
 		companyDao.delete(2);

@@ -1,5 +1,6 @@
 package facades;
 
+import java.sql.SQLException;
 import java.util.List;
 
 import beans.Company;
@@ -67,7 +68,7 @@ public class AdminFacade extends ClientFacade {
 	}
 
 	public boolean isCompanyValid(Company company, boolean fromUpdate)
-			throws ThreadException, DBException, MisMatchObjectException {
+			throws ThreadException, DBException, MisMatchObjectException, SQLException {
 		// check all company field not empty or null
 		System.out.println("\r\nstart valiadtion: ");
 		if (StringHelper.allParametersNotEmpty(company, fromUpdate)) {
@@ -83,7 +84,7 @@ public class AdminFacade extends ClientFacade {
 					String sql = ""// DBUtils.IS_OTHER_COMPANY_EXISTS_QUERY
 							.replace(DBUtils.EMAIL_PLACE_HOLDER, existsCompany.getEmail())
 							.replace(DBUtils.ID_PLACE_HOLDER, String.valueOf(existsCompany.getId()));
-					if (companyDao.getCount(sql) == 0) {
+					if (!companyDao.isOtherExists(company.getId(), company.getEmail())) {
 						System.out.println(StringHelper.VALIDATION_OK_MESSAGE);
 						return true;
 					}

@@ -26,6 +26,7 @@ public class StringHelper {
 	public static final String CUSTOMER_EXISTS_MESSAGE = "IsCustomer exists with email ";
 	public static final String CUSTOMER_EXISTS_FALSE_MESSAGE = "IsCustomer not exists with email ";
 	public static final String COUPON_NOT_EXISTS_MESSAGE = "isCoupon not exists with title %s, companyID %s";
+	public static final String COMPANY_UPDATE_FAILED_MESSAGE = "Update company failed: ";
 	// exception section
 	public static final String COMPANY_EXCEPTION = "get company exception. ";
 	public static final String CONNECTION_EXCEPTION = "open connection failed. ";
@@ -45,6 +46,7 @@ public class StringHelper {
 	public static final String CUSTOMER_GET_EXCEPTION = "customer get Exception";
 	public static final String CUSTOMER_EXISTS_EXCEPTION = "IsCustomer exists Exception ";
 	public static final String MISMATCH_OBJECT_EXCEPTION = "All parameters exception: object mismatch";
+	public static final String LOGIN_EXCEPTION = "Login failed ";
 
 	/**
 	 * check all parameters for Coupon/Company/Customer for new or update object.
