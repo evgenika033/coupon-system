@@ -146,7 +146,7 @@ public class CompanyDao implements ICompanyDao {
 				.replace(DBUtils.PARAMETER_PLACE_HOLDER, CompanyUtil.PARAMETER_NAME_EMAIL);
 		Map<Integer, Object> parameters = new HashMap<Integer, Object>();
 		parameters.put(1, name);
-		parameters.put(1, email);
+		parameters.put(2, email);
 		List<Company> companies = CompanyUtil.executeQuery(sql, parameters);
 		if (companies.size() > 0) {
 			System.out.println("IsCompany exists with name " + name + ", email " + email);

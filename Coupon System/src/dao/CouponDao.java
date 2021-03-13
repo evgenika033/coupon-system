@@ -114,6 +114,15 @@ public class CouponDao implements ICouponDao {
 	}
 
 	@Override
+	public List<Integer> getCouponPurchaseByCoupon(int couponID)
+			throws ThreadException, DBException, SQLException, MisMatchObjectException {
+		String sql = CouponUtil.GET_CUSTOMERS_FROM_CUSTOMERS_VS_COUPONS_BY_COUPON_ID;
+		Map<Integer, Object> parameters = new HashMap<Integer, Object>();
+		parameters.put(1, couponID);
+		return CouponUtil.executeQuerySpecial(sql, parameters);
+	}
+
+	@Override
 	public void deleteCouponPurchase(int customerID, int couponID) throws ThreadException, DBException {
 		String sql = DBUtils.DELETE_CUSTOMERS_VS_COUPONS_QUERY;
 		Map<Integer, Object> parameters = new HashMap<Integer, Object>();

@@ -13,6 +13,9 @@ public interface ICouponDao extends IDaoCRUD<Coupon> {
 
 	void addCouponPurchase(int customerID, int couponID) throws ThreadException, DBException;
 
+	List<Integer> getCouponPurchaseByCoupon(int couponID)
+			throws ThreadException, DBException, SQLException, MisMatchObjectException;
+
 	void deleteCouponPurchase(int customerID, int couponID) throws ThreadException, DBException;
 
 	List<Coupon> getByCompany(int companyID) throws ThreadException, DBException, SQLException, MisMatchObjectException;

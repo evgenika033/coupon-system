@@ -17,9 +17,9 @@ import exception.ThreadException;
 public class CompanyUtil {
 	public static final String TABLE = "company";
 	public static final String PARAMETER_ID = "id=?";
-	public static final String PARAMETER_NAME_EMAIL = "`name`=?, `email`=?";
+	public static final String PARAMETER_NAME_EMAIL = "`name`=? and `email`=?";
 	public static final String PARAMETER_EMAIL_AND_NOT_ID = "`email`=? and not `id`=?";
-	public static final String UPDATE_EMAIL_PASSWORD_PARAMETER = "`email`=?,`password` = ?";
+	public static final String UPDATE_EMAIL_PASSWORD_PARAMETER = "`name`=?, `email`=?,`password` = ?";
 
 	public static List<Company> executeQuery(String sql, Map<Integer, Object> parameters)
 			throws ThreadException, DBException, SQLException {

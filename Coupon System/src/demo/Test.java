@@ -10,11 +10,11 @@ import beans.Company;
 import beans.Coupon;
 import beans.Customer;
 import connection.ConnectionPool;
-import dao.CompanyDao;
 import dao.CustomerDao;
 import exception.DBException;
 import exception.MisMatchObjectException;
 import exception.ThreadException;
+import facades.AdminFacade;
 import facades.CompanyFacade;
 import facades.CustomerFacade;
 
@@ -25,12 +25,16 @@ public class Test {
 		// checkCompany();
 		// checkCustomer();
 		// checkCouponFacade();
-		CompanyFacade companyFacade = new CompanyFacade();
+		AdminFacade adminFacade = new AdminFacade();
+		// Company company = new Company("Versis@", "Versis@com", "12345");
+		Company company = new Company(7, "Ver", "Verddd@com", "12300");
 		System.out.println("test login: ");
-		boolean login = companyFacade.login("Versis2@com", "1234");
-		System.out.println("login is " + login);
-		System.out.println("test company details: ");
-		System.out.println(companyFacade.getCompanyDetails());
+		System.out.println("login result: " + adminFacade.login("admin@admin.com", "admin"));
+		// adminFacade.addCompany(company);
+		// adminFacade.updateCompany(company);
+		System.out.println("test delete company: ");
+		adminFacade.deleteCompany(5);
+
 		ConnectionPool.getInstance().closeAllConnections();
 
 	}
@@ -85,8 +89,15 @@ public class Test {
 		customerFacade.getCustomerCoupons().forEach(c -> System.out.println(c));
 	}
 
-	private static void checkCompany() throws ThreadException, DBException {
-		CompanyDao companyDao = new CompanyDao();
+	private static void checkCompany()
+			throws ThreadException, DBException, LoginException, SQLException, MisMatchObjectException {
+		CompanyFacade companyFacade = new CompanyFacade();
+		System.out.println("test login: ");
+		boolean login = companyFacade.login("Versis2@com", "1234");
+		System.out.println("login is " + login);
+		System.out.println("test company details: ");
+		System.out.println(companyFacade.getCompanyDetails());
+		// CompanyDao companyDao = new CompanyDao();
 		// Company company = companyDao.get(1);
 		// System.out.println(company);
 		// company.setEmail("change@");
@@ -96,7 +107,7 @@ public class Test {
 		// System.out.println(companyDao.get());
 //		company = new Company("Versis37", "Versis5@com", null);
 //		companyDao.add(company);
-		companyDao.delete(2);
+		// companyDao.delete(2);
 	}
 
 }
