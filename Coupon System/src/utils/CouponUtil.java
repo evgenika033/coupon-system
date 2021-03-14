@@ -17,7 +17,7 @@ import exception.MisMatchObjectException;
 import exception.ThreadException;
 
 public class CouponUtil {
-	public static final String TABLE = "coupon";
+	public static final String TABLE = "`coupons_system`.`coupon`";
 	public static final String PARAMETER_ID = "id=?";
 	public static final String UPDATE_PARAMETER = "`company_id` = ?, `category_id` = ?, `title` = ?, `description` = ?, `start_date` = ?, `end_date` =?, `amount` = ?, `price` = ?, `image` = ?";
 	public static final String GET_BY_COMPANY_ID = "`company_id` =?";
@@ -26,8 +26,8 @@ public class CouponUtil {
 	public static final CharSequence GET_BY_CUSTOMER_ID_AND_MAX_PRICE = "`customer_id` =?  and `price`<?";
 	public static final CharSequence GET_BY_COMPANY_AND_CATEGORY = "`company_id` =?  and `category_id`=?";
 	public static final String GET_OTHER_COUPON_BY_TITLE_AND_COMPANY = "`title`=? and `company_id`=? and not `id`=?";
-	public static final String GET_CUSTOMERS_FROM_CUSTOMERS_VS_COUPONS_BY_COUPON_ID = "select customer_id from `customers_vs_coupons` where coupon_id=?";
-	public static final String GET_COUPONS_FROM_CUSTOMERS_VS_COUPONS_BY_CUSTOMER_ID = "select coupon_id from `customers_vs_coupons` where customer_id=?";
+	public static final String GET_CUSTOMERS_FROM_CUSTOMERS_VS_COUPONS_BY_COUPON_ID = "select customer_id from `coupons_system`.`customers_vs_coupons` where coupon_id=?";
+	public static final String GET_COUPONS_FROM_CUSTOMERS_VS_COUPONS_BY_CUSTOMER_ID = "select coupon_id from `coupons_system`.`customers_vs_coupons` where customer_id=?";
 	public static final String GET_COUPONS_BY_END_DATE = "`end_date` <?";
 
 	/**

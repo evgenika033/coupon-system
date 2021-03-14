@@ -20,14 +20,13 @@ import facades.CustomerFacade;
 import job.CouponsJob;
 import login.ClientType;
 import login.LoginManager;
+import utils.DBUtils;
 
 public class Test {
 
 	public static void main(String[] args) throws InterruptedException, SQLException, ThreadException, DBException,
 			LoginException, MisMatchObjectException {
-		// checkCompany();
-		// checkCustomer();
-		// checkCouponFacade();
+		startApp();
 		CouponsJob job = new CouponsJob();
 		new Thread(job).start();
 		System.out.println("test login: ");
@@ -45,6 +44,10 @@ public class Test {
 		Thread.sleep(1000);
 		ConnectionPool.getInstance().closeAllConnections();
 //"Arik", "Lavi", "lavi@", "2255"
+	}
+
+	private static void startApp() throws ThreadException, DBException, SQLException {
+		DBUtils.createTables();
 	}
 
 	private static void checkAdmin(AdminFacade facade)

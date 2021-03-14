@@ -15,7 +15,7 @@ import exception.DBException;
 import exception.ThreadException;
 
 public class CustomerUtil {
-	public static final String TABLE = "customer";
+	public static final String TABLE = "`coupons_system`.`customer`";
 	public static final String PARAMETER_ID = "`id`=?";
 	public static final String PARAMETER_EMAIL = "`email`=?";
 	public static final String UPDATE_PARAMETER = "`first_name` = ?, `last_name` = ?, `email` = ?, `password` = ?";
