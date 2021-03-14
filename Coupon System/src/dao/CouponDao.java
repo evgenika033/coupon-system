@@ -1,6 +1,7 @@
 package dao;
 
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -123,6 +124,15 @@ public class CouponDao implements ICouponDao {
 	}
 
 	@Override
+	public List<Integer> getCouponPurchaseByCustomer(int customerID)
+			throws ThreadException, DBException, SQLException, MisMatchObjectException {
+		String sql = CouponUtil.GET_COUPONS_FROM_CUSTOMERS_VS_COUPONS_BY_CUSTOMER_ID;
+		Map<Integer, Object> parameters = new HashMap<Integer, Object>();
+		parameters.put(1, customerID);
+		return CouponUtil.executeQuerySpecial(sql, parameters);
+	}
+
+	@Override
 	public void deleteCouponPurchase(int customerID, int couponID) throws ThreadException, DBException {
 		String sql = DBUtils.DELETE_CUSTOMERS_VS_COUPONS_QUERY;
 		Map<Integer, Object> parameters = new HashMap<Integer, Object>();
@@ -223,6 +233,16 @@ public class CouponDao implements ICouponDao {
 		Map<Integer, Object> parameters = new HashMap<Integer, Object>();
 		parameters.put(1, customerID);
 		parameters.put(2, category.ordinal() + 1);
+		return CouponUtil.executeQuery(sql, parameters);
+	}
+
+	@Override
+	public List<Coupon> getCouponsByEndDate(LocalDate localDate)
+			throws ThreadException, DBException, SQLException, MisMatchObjectException {
+		String sql = DBUtils.GET_ONE_QUERY.replace(DBUtils.TABLE_PLACE_HOLDER, CouponUtil.TABLE)
+				.replace(DBUtils.PARAMETER_PLACE_HOLDER, CouponUtil.GET_COUPONS_BY_END_DATE);
+		Map<Integer, Object> parameters = new HashMap<Integer, Object>();
+		parameters.put(1, localDate);
 		return CouponUtil.executeQuery(sql, parameters);
 	}
 }

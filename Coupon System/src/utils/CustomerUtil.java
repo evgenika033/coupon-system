@@ -19,6 +19,7 @@ public class CustomerUtil {
 	public static final String PARAMETER_ID = "`id`=?";
 	public static final String PARAMETER_EMAIL = "`email`=?";
 	public static final String UPDATE_PARAMETER = "`first_name` = ?, `last_name` = ?, `email` = ?, `password` = ?";
+	public static final String PARAMETER_BY_EMAIL_AND_NOT_ID = "`email`=? and not `id`=?";
 
 	public static List<Customer> executeQuery(String sql, Map<Integer, Object> parameters)
 			throws ThreadException, DBException, SQLException {

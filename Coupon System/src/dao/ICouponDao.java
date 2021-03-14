@@ -1,6 +1,7 @@
 package dao;
 
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.List;
 
 import beans.Category;
@@ -39,5 +40,11 @@ public interface ICouponDao extends IDaoCRUD<Coupon> {
 			throws ThreadException, DBException, SQLException, MisMatchObjectException;
 
 	List<Coupon> getCustomerCoupons(int customerID, Category category)
+			throws ThreadException, DBException, SQLException, MisMatchObjectException;
+
+	List<Integer> getCouponPurchaseByCustomer(int customerID)
+			throws ThreadException, DBException, SQLException, MisMatchObjectException;
+
+	List<Coupon> getCouponsByEndDate(LocalDate localDate)
 			throws ThreadException, DBException, SQLException, MisMatchObjectException;;
 }

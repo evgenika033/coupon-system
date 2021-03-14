@@ -91,36 +91,21 @@ public class CustomerDao implements ICustomerDao {
 //	}
 
 	// check for other customer (with different ID)and the same email
-//	public boolean isOtherExists(int id, String email) throws ThreadException, DBException {
-//		String sql = DBUtils.IS_OTHER_CUSTOMER_EXISTS_QUERY;
-//		System.out.println("IsOtherExists query: " + sql);
-//		Connection connection = ConnectionPool.getInstance().getConnection();
-//
-//		try (PreparedStatement statement = connection.prepareStatement(sql)) {
-//			statement.setString(1, email);
-//			statement.setInt(2, id);
-//			ResultSet resultSet = statement.executeQuery();
-//			returnConnection(connection);
-//			if (resultSet != null) {
-//				System.out.println(StringHelper.RESULT_SET_IS_NOT_NULL_MESSAGE);
-//				if (resultSet.next()) {
-//					if (resultSet.getInt(1) > 0) {
-//						System.out.println("IsOtherCustomer exists with id " + id + ", email " + email);
-//						return true;
-//					}
-//					System.out.println("IsOtherCustomer not exists with id " + id + ", email " + email);
-//					return false;
-//
-//				}
-//			} else {
-//				returnConnection(connection);
-//				throw new DBException(StringHelper.RESULT_SET_ISNULL_MESSAGE);
-//			}
-//		} catch (SQLException e) {
-//			throw new DBException("IsOtherCustomer exists Exception" + e.getCause());
-//		}
-//		throw new DBException("IsOtherCustomer exists Exception");
-//	}
+	public boolean isOtherExists(int id, String email) throws ThreadException, DBException, SQLException {
+		String sql = DBUtils.GET_ONE_QUERY.replace(DBUtils.TABLE_PLACE_HOLDER, CustomerUtil.TABLE)
+				.replace(DBUtils.PARAMETER_PLACE_HOLDER, CustomerUtil.PARAMETER_BY_EMAIL_AND_NOT_ID);
+		Map<Integer, Object> parameters = new HashMap<Integer, Object>();
+		parameters.put(1, email);
+		parameters.put(2, id);
+		List<Customer> customers = CustomerUtil.executeQuery(sql, parameters);
+		if (customers.size() > 0) {
+			System.out.println("IsOtherCustomer exists with id " + id + ", email " + email);
+			return true;
+		}
+		System.out.println("IsOtherCustomer not exists with id " + id + ", email " + email);
+		return false;
+
+	}
 
 	@Override
 	public void delete(int id) throws DBException, ThreadException {
@@ -206,8 +191,8 @@ public class CustomerDao implements ICustomerDao {
 		Map<Integer, Object> parameters = new HashMap<Integer, Object>();
 		parameters.put(1, email);
 		List<Customer> customers = CustomerUtil.executeQuery(sql, parameters);
-		if (customers.size() > 0) {
-			return true;
+		if (customers.size() == 0) {
+			return false;
 		}
 		throw new DBException(StringHelper.CUSTOMER_EXISTS_EXCEPTION);
 
