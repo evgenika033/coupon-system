@@ -3,6 +3,8 @@ package facades;
 import java.sql.SQLException;
 import java.util.List;
 
+import javax.security.auth.login.LoginException;
+
 import beans.Company;
 import beans.Coupon;
 import beans.Customer;
@@ -20,8 +22,12 @@ public class AdminFacade extends ClientFacade {
 	}
 
 	@Override
-	public boolean login(String email, String password) {
-		return email == this.email && password == this.password;
+	public boolean login(String email, String password) throws LoginException {
+		if (email == this.email && password == this.password) {
+			System.out.println("login success admin: " + email);
+			return true;
+		}
+		throw new LoginException("Login failed ");
 	}
 
 	public void addCompany(Company company) throws ThreadException, DBException, MisMatchObjectException, SQLException {

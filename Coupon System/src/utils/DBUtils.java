@@ -18,8 +18,8 @@ public class DBUtils {
 	public static final String UPDATE_QUERY = "UPDATE _TABLE_ SET _PARAMETER_ WHERE (`id` = ?)";
 	public static final String GET_EMAIL_PASSWORD_PARAMETER = "`email`=? and `password` = ?";
 	public static final String ADD_CUSTOMER_QUERY = "INSERT INTO `coupons_system`.`customer` (`first_name`, `last_name`, `email`, `password`) VALUES (?, ?, ?, ?)";
-	public static final String GET_CUSTOMERS_COUPONS_QUERY = "select * from `coupons_system`.`coupon` as c join customers_vs_coupons as cc on c.id=cc.coupon_id	where cc.customer_id=?";
-	public static final String GET_CUSTOMERS_COUPONS_BY_MAX_PRICE_QUERY = "select * from `coupons_system`.`coupon` as c join customers_vs_coupons as cc on c.id=cc.coupon_id	where cc.customer_id=? and cc.price<?";
+	public static final String GET_CUSTOMERS_COUPONS_QUERY = "select * from `coupons_system`.`coupon` as c join `coupons_system`.`customers_vs_coupons` as cc on c.id=cc.coupon_id	where cc.customer_id=?";
+	public static final String GET_CUSTOMERS_COUPONS_BY_MAX_PRICE_QUERY = "select * from `coupons_system`.`coupon` as c join `coupons_system`.`customers_vs_coupons` as cc on c.id=cc.coupon_id	where cc.customer_id=? and cc.price<?";
 	public static final String GET_CUSTOMERS_COUPONS_CATEGORY_QUERY = "join `coupons_system`.`customers_vs_coupons` as cc on c.id=cc.coupon_id join category as cat on cat.id=c.category_id where cc.customer_id=? and c.category_id=?";
 	public static final String ADD_COUPON_QUERY = "INSERT INTO `coupons_system`.`coupon` (`company_id`, `category_id`, `title`, `description`, `start_date`, `end_date`, `amount`, `price`, `image`) VALUES (?	, ?, ?, ?, ?, ?, ?, ?,?)";
 	public static final String IS_COUPON_EXISTS_QUERY = "select * from `coupons_system`.`coupon` where `title`=? and `company_id`=?";
@@ -173,7 +173,7 @@ public class DBUtils {
 	}
 
 	/**
-	 * for update, create, delete
+	 * for create tables
 	 * 
 	 * @param sql
 	 * @throws DBException
@@ -193,7 +193,7 @@ public class DBUtils {
 	}
 
 	/**
-	 * for drop, create
+	 * for drop, create schema
 	 * 
 	 * @param sql
 	 * @throws ThreadException

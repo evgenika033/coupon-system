@@ -13,7 +13,6 @@ import exception.MisMatchObjectException;
 import exception.ThreadException;
 import utils.CouponUtil;
 import utils.DBUtils;
-import utils.DateTimeUtil;
 import utils.StringHelper;
 
 public class CouponDao implements ICouponDao {
@@ -29,11 +28,11 @@ public class CouponDao implements ICouponDao {
 		if (StringHelper.allParametersNotEmpty(addObject, fromUpdate)) {
 			Map<Integer, Object> parameters = new HashMap<Integer, Object>();
 			parameters.put(1, addObject.getCompanyID());
-			parameters.put(2, addObject.getCategory().ordinal());
+			parameters.put(2, addObject.getCategory().ordinal() + 1);
 			parameters.put(3, addObject.getTitle());
 			parameters.put(4, addObject.getDescription());
-			parameters.put(5, DateTimeUtil.convertLocalDate2SQLDate(addObject.getStartDate()));
-			parameters.put(6, DateTimeUtil.convertLocalDate2SQLDate(addObject.getEndDate()));
+			parameters.put(5, addObject.getStartDate());
+			parameters.put(6, addObject.getEndDate());
 			parameters.put(7, addObject.getAmount());
 			parameters.put(8, addObject.getPrice());
 			parameters.put(9, addObject.getImage());
@@ -51,11 +50,11 @@ public class CouponDao implements ICouponDao {
 					.replace(DBUtils.PARAMETER_PLACE_HOLDER, CouponUtil.UPDATE_PARAMETER);
 			Map<Integer, Object> parameters = new HashMap<Integer, Object>();
 			parameters.put(1, updateObject.getCompanyID());
-			parameters.put(2, updateObject.getCategory().ordinal());
+			parameters.put(2, updateObject.getCategory().ordinal() + 1);
 			parameters.put(3, updateObject.getTitle());
 			parameters.put(4, updateObject.getDescription());
-			parameters.put(5, DateTimeUtil.convertLocalDate2SQLDate(updateObject.getStartDate()));
-			parameters.put(6, DateTimeUtil.convertLocalDate2SQLDate(updateObject.getEndDate()));
+			parameters.put(5, updateObject.getStartDate());
+			parameters.put(6, updateObject.getEndDate());
 			parameters.put(7, updateObject.getAmount());
 			parameters.put(8, updateObject.getPrice());
 			parameters.put(9, updateObject.getImage());
@@ -129,6 +128,18 @@ public class CouponDao implements ICouponDao {
 		String sql = CouponUtil.GET_COUPONS_FROM_CUSTOMERS_VS_COUPONS_BY_CUSTOMER_ID;
 		Map<Integer, Object> parameters = new HashMap<Integer, Object>();
 		parameters.put(1, customerID);
+		return CouponUtil.executeQuerySpecial(sql, parameters);
+	}
+
+	@Override
+	public List<Integer> getCouponPurchase(int customerID, int couponID)
+			throws ThreadException, DBException, SQLException, MisMatchObjectException {
+		String sql = DBUtils.GET_ONE_QUERY.replace(DBUtils.TABLE_PLACE_HOLDER, CouponUtil.TABLE_CUSTOMERS_VS_COUPONS)
+				.replace(DBUtils.PARAMETER_PLACE_HOLDER,
+						CouponUtil.GET_FROM_CUSTOMERS_VS_COUPONS_BY_CUSTOMER_AND_COUPON);
+		Map<Integer, Object> parameters = new HashMap<Integer, Object>();
+		parameters.put(1, customerID);
+		parameters.put(2, couponID);
 		return CouponUtil.executeQuerySpecial(sql, parameters);
 	}
 

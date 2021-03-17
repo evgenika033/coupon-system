@@ -31,7 +31,7 @@ public class LoginManager {
 		return instance;
 	}
 
-	private ClientFacade adminLogin(String email, String password) {
+	private ClientFacade adminLogin(String email, String password) throws LoginException {
 		AdminFacade adminFacade = new AdminFacade();
 		if (adminFacade.login(email, password)) {
 			System.out.println("login admin success: " + email);

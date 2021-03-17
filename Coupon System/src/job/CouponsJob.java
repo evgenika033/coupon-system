@@ -13,18 +13,25 @@ import exception.ThreadException;
 public class CouponsJob implements Runnable {
 
 	private boolean isExist = false;
+	private boolean isExistReaded = false;
+
+	public boolean isExistReaded() {
+		return isExistReaded;
+	}
+
 	CouponDao couponDao = new CouponDao();
 
 	@Override
 	public void run() {
 		while (!isExist) {
 			try {
-				Thread.sleep(1000);
 				job();
+				Thread.sleep(1000 * 60 * 60 * 24);
 			} catch (InterruptedException e) {
 				System.err.println("job interupt exception: " + e);
 			}
 		}
+		isExistReaded = true;
 		System.out.println("job stopped");
 	}
 

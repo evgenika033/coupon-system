@@ -1,5 +1,6 @@
 package demo;
 
+import java.io.IOException;
 import java.sql.SQLException;
 import java.time.LocalDate;
 
@@ -10,6 +11,8 @@ import beans.Company;
 import beans.Coupon;
 import beans.Customer;
 import connection.ConnectionPool;
+import dao.CompanyDao;
+import dao.CouponDao;
 import dao.CustomerDao;
 import exception.DBException;
 import exception.MisMatchObjectException;
@@ -21,33 +24,91 @@ import job.CouponsJob;
 import login.ClientType;
 import login.LoginManager;
 import utils.DBUtils;
+import utils.FileUtil;
 
 public class Test {
 
+	private static CouponsJob job = new CouponsJob();
+	private static Thread thread = new Thread(job);
+	private static CompanyDao companyDao = new CompanyDao();
+	private static CustomerDao customerDao = new CustomerDao();
+	private static CouponDao couponDao = new CouponDao();
+
 	public static void main(String[] args) throws InterruptedException, SQLException, ThreadException, DBException,
-			LoginException, MisMatchObjectException {
-		startApp();
-		CouponsJob job = new CouponsJob();
-		new Thread(job).start();
+			LoginException, MisMatchObjectException, IOException {
+
+		// startApp();
+		// thread.start();
 		System.out.println("test login: ");
-		AdminFacade adminFacade = (AdminFacade) LoginManager.getInstance().login("admin@admin.com", "admin",
-				ClientType.ADMINISTRATOR);
+//		AdminFacade adminFacade = (AdminFacade) LoginManager.getInstance().login("admin@admin.com", "admin",
+//				ClientType.ADMINISTRATOR);
 
-		CompanyFacade companyFacade = (CompanyFacade) LoginManager.getInstance().login("Versis@com", "1234",
-				ClientType.COMPANY);
-		System.out.println(companyFacade.getCompanyDetails());
+//		CompanyFacade companyFacade = (CompanyFacade) LoginManager.getInstance().login("Angel.Bakeries@company.com",
+//				"123456", ClientType.COMPANY);
+//		System.out.println(companyFacade.getCompanyDetails());
 
-		CustomerFacade customerFacade = (CustomerFacade) LoginManager.getInstance().login("lavi@", "2255",
-				ClientType.CUSTOMER);
-		System.out.println(customerFacade.getCustomerDetails());
-		job.exist();
-		Thread.sleep(1000);
+		checkCustomer((CustomerFacade) LoginManager.getInstance().login("aaron.ahl@customer.com", "123456",
+				ClientType.CUSTOMER));
+
+		// jobStop();
 		ConnectionPool.getInstance().closeAllConnections();
-//"Arik", "Lavi", "lavi@", "2255"
+
 	}
 
-	private static void startApp() throws ThreadException, DBException, SQLException {
+	private static void checkCustomer(CustomerFacade customerFacade)
+			throws DBException, ThreadException, SQLException, MisMatchObjectException, LoginException {
+		System.out.println("test Customer Details ");
+		Customer customer = customerFacade.getCustomerDetails();
+		System.out.println(customer);
+		Coupon coupon = couponDao.get(10);
+		System.out.println("coupon amount before buing: " + coupon.getAmount());
+		System.out.println("test purchese coupon:  ");
+		customerFacade.purchaseCoupon(coupon);
+		coupon = couponDao.get(10);
+		System.out.println("coupon amount after buing: " + coupon.getAmount());
+
+		System.out.println();
+		// customerDao.add(customer);
+		// customer = customerDao.get(2);
+		// System.out.println(customer);
+
+		// customer.setLastName("Mu");
+		// customer.setEmail("Shu@");
+		// customer.setPassword("2555");
+		// customerDao.update(customer);
+		// System.out.println(customerDao.isExists("ww@"));
+
+		// System.out.println("test Customer coupons ");
+		// customerFacade.getCustomerCoupons().forEach(c -> System.out.println(c));
+	}
+
+	// drop tables, create tables, fill data
+	private static void startApp()
+			throws ThreadException, DBException, SQLException, IOException, MisMatchObjectException {
 		DBUtils.createTables();
+		FileUtil.createData();
+	}
+
+	/**
+	 * stop coupon job
+	 */
+	private static void jobStop() {
+		job.exist();
+		// int counter = 0;
+		for (int i = 0; i < 10; i++) {
+			if (job.isExistReaded()) {
+				break;
+			} else {
+				try {
+					Thread.sleep(1000);
+				} catch (InterruptedException e) {
+					System.out.println("thread interupt exception: " + e);
+				}
+				System.out.println("wait for stopping job: 10/" + i);
+			}
+
+		}
+		thread.interrupt();
 	}
 
 	private static void checkAdmin(AdminFacade facade)
@@ -93,36 +154,13 @@ public class Test {
 //		companyFacade.getCompanyCoupons(10).forEach(c -> System.out.println(c));
 	}
 
-	private static void checkCustomer()
-			throws DBException, ThreadException, SQLException, MisMatchObjectException, LoginException {
-		CustomerDao customerDao = new CustomerDao();
-		Customer customer = new Customer("Arik", "Lavi", "lavi@", "2255");
-		// customerDao.add(customer);
-		// customer = customerDao.get(2);
-		System.out.println(customer);
-		customer.setFirstName("Shuki3");
-//		customer.setLastName("Mu");
-//		customer.setEmail("Shu@");
-//		customer.setPassword("2555");
-		// customerDao.update(customer);
-		// System.out.println(customerDao.isExists("ww@"));
-		CustomerFacade customerFacade = new CustomerFacade();
-		System.out.println("test customer login ");
-		System.out.println("login result " + customerFacade.login("Shu@", "2555"));
-		System.out.println("test Customer Details ");
-		customer = customerFacade.getCustomerDetails();
-		System.out.println(customer);
-		System.out.println("test Customer coupons ");
-		customerFacade.getCustomerCoupons().forEach(c -> System.out.println(c));
-	}
-
 	private static void checkCompany(CompanyFacade facade)
 			throws ThreadException, DBException, LoginException, SQLException, MisMatchObjectException {
 
 		System.out.println("test company details");
 		Company company = facade.getCompanyDetails();
 		System.out.println(company);
-		Coupon coupon = new Coupon(8, 4, Category.ELECTRICITY, "title21", "description", LocalDate.of(2021, 02, 02),
+		Coupon coupon = new Coupon(8, 4, Category.ACCESSORIES, "title21", "description", LocalDate.of(2021, 02, 02),
 				LocalDate.of(2021, 07, 01), 10, 5.10, "eert");
 		// System.out.println("test add coupon ");
 		// companyFacade.addCoupon(coupon);
