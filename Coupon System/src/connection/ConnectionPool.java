@@ -15,7 +15,6 @@ public class ConnectionPool {
 	private Stack<Connection> connections = new Stack<>();
 
 	private ConnectionPool() throws DBException {
-		// System.out.println("ConnectionPool CTOR IN ACTION");
 		openAllConnections();
 	}
 
@@ -32,7 +31,6 @@ public class ConnectionPool {
 	}
 
 	public Connection getConnection() throws ThreadException {
-
 		synchronized (connections) {
 			if (connections.empty()) {
 				try {
@@ -48,12 +46,10 @@ public class ConnectionPool {
 	}
 
 	public void returnConnection(Connection connection) {
-
 		synchronized (connections) {
 			connections.push(connection);
 			connections.notify();
 		}
-		// System.out.println("connectionPool size: " + connections.size());
 	}
 
 	public void openAllConnections() throws DBException {
@@ -65,7 +61,6 @@ public class ConnectionPool {
 			} catch (SQLException e) {
 				throw new DBException(StringHelper.CONNECTION_EXCEPTION + e.getCause());
 			}
-
 			connections.push(connection);
 		}
 	}
@@ -75,7 +70,6 @@ public class ConnectionPool {
 			while (connections.size() < NUMBER_OF_CONNECTIONS) {
 				wait();
 			}
-
 			// close all connections before remove
 			connections.forEach(c -> {
 				try {
@@ -84,11 +78,8 @@ public class ConnectionPool {
 					System.out.println("connection close exception: " + e.getMessage());
 				}
 			});
-
 			connections.removeAllElements();
 			System.out.println("all connection is closed. exit");
 		}
-
 	}
-
 }

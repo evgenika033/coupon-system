@@ -18,6 +18,9 @@ public class CustomerFacade extends ClientFacade {
 
 	private int customerID;
 
+	/**
+	 * empty ctor
+	 */
 	public CustomerFacade() {
 		// TODO Auto-generated constructor stub
 	}
@@ -33,6 +36,15 @@ public class CustomerFacade extends ClientFacade {
 		throw new LoginException(StringHelper.LOGIN_EXCEPTION);
 	}
 
+	/**
+	 * Buying coupon
+	 * 
+	 * @param coupon
+	 * @throws ThreadException
+	 * @throws DBException
+	 * @throws MisMatchObjectException
+	 * @throws SQLException
+	 */
 	public void purchaseCoupon(Coupon coupon)
 			throws ThreadException, DBException, MisMatchObjectException, SQLException {
 		boolean fromUpdate = true;
@@ -65,22 +77,60 @@ public class CustomerFacade extends ClientFacade {
 		return true;
 	}
 
+	/**
+	 * get all customer's coupons
+	 * 
+	 * @return
+	 * @throws ThreadException
+	 * @throws DBException
+	 * @throws SQLException
+	 * @throws MisMatchObjectException
+	 */
 	public List<Coupon> getCustomerCoupons()
 			throws ThreadException, DBException, SQLException, MisMatchObjectException {
 		return couponDao.getCustomerCoupons(customerID);
 	}
 
+	/**
+	 * get all customer's coupons filtered by category
+	 * 
+	 * @param category
+	 * @return
+	 * @throws ThreadException
+	 * @throws DBException
+	 * @throws SQLException
+	 * @throws MisMatchObjectException
+	 */
 	public List<Coupon> getCustomerCoupons(Category category)
 			throws ThreadException, DBException, SQLException, MisMatchObjectException {
 		return couponDao.getCustomerCoupons(customerID, category);
 
 	}
 
+	/**
+	 * get all customer's coupons filtered by maxPrice
+	 * 
+	 * @param maxPrice
+	 * @return
+	 * @throws ThreadException
+	 * @throws DBException
+	 * @throws SQLException
+	 * @throws MisMatchObjectException
+	 */
 	public List<Coupon> getCustomerCoupons(double maxPrice)
 			throws ThreadException, DBException, SQLException, MisMatchObjectException {
 		return couponDao.getCustomerCoupons(customerID, maxPrice);
 	}
 
+	/**
+	 * get Customer Details with coupons
+	 * 
+	 * @return
+	 * @throws ThreadException
+	 * @throws DBException
+	 * @throws SQLException
+	 * @throws MisMatchObjectException
+	 */
 	public Customer getCustomerDetails() throws ThreadException, DBException, SQLException, MisMatchObjectException {
 		Customer customer = customerDao.get(customerID);
 		if (customer != null) {

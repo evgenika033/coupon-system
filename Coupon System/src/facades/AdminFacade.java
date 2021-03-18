@@ -18,13 +18,12 @@ public class AdminFacade extends ClientFacade {
 	private final String password = "admin";
 
 	public AdminFacade() {
-		// TODO Auto-generated constructor stub
+
 	}
 
 	@Override
 	public boolean login(String email, String password) throws LoginException {
 		if (email == this.email && password == this.password) {
-			System.out.println("login success admin: " + email);
 			return true;
 		}
 		throw new LoginException("Login failed ");
@@ -109,15 +108,12 @@ public class AdminFacade extends ClientFacade {
 		System.out.println("coupons amount before delete: " + coupons.size());
 		for (Coupon coupon : coupons) {
 			System.out.println("get coupon purcheses");
-			List<Integer> result = couponDao.getCouponPurchaseByCustomer(customerID);
-			System.out.println("customer_VS_coupon amount before delete: " + result.size());
-			for (int couponID : result) {
-				System.out.println("customer_VS_coupon will be delete: " + customerID + ", " + coupon.getId());
-				couponDao.deleteCouponPurchase(couponID, coupon.getId());
+			List<Integer> result = couponDao.getCouponPurchaseByCoupon(coupon.getId());
+			for (int customerResultID : result) {
+				System.out.println("customer_VS_coupon size before delete: " + result.size());
+				System.out.println("customer_VS_coupon will be delete: " + customerResultID + ", " + coupon.getId());
+				couponDao.deleteCouponPurchase(customerResultID, coupon.getId());
 			}
-			System.out.println("coupon will be delete: " + coupon.getTitle());
-			couponDao.delete(coupon.getId());
-
 		}
 		System.out.println("customer will be delete: " + customerID);
 		customerDao.delete(customerID);

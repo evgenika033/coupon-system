@@ -24,8 +24,8 @@ public class CouponUtil {
 	public static final String GET_BY_COMPANY_ID = "`company_id` =?";
 	public static final String GET_BY_COMPANY_ID_AND_CATEGORY = "`company_id` =?  and `category_id`=?";
 	public static final String GET_BY_COMPANY_ID_AND_MAX_PRICE = "`company_id` =?  and `price`<?";
-	public static final CharSequence GET_BY_CUSTOMER_ID_AND_MAX_PRICE = "`customer_id` =?  and `price`<?";
-	public static final CharSequence GET_BY_COMPANY_AND_CATEGORY = "`company_id` =?  and `category_id`=?";
+	public static final String GET_BY_CUSTOMER_ID_AND_MAX_PRICE = "`customer_id` =?  and `price`<?";
+	public static final String GET_BY_COMPANY_AND_CATEGORY = "`company_id` =?  and `category_id`=?";
 	public static final String GET_OTHER_COUPON_BY_TITLE_AND_COMPANY = "`title`=? and `company_id`=? and not `id`=?";
 	public static final String GET_CUSTOMERS_FROM_CUSTOMERS_VS_COUPONS_BY_COUPON_ID = "select customer_id from `coupons_system`.`customers_vs_coupons` where coupon_id=?";
 	public static final String GET_COUPONS_FROM_CUSTOMERS_VS_COUPONS_BY_CUSTOMER_ID = "select coupon_id from `coupons_system`.`customers_vs_coupons` where customer_id=?";
@@ -75,8 +75,6 @@ public class CouponUtil {
 					} catch (SQLException e) {
 						System.err.println("setSQL exception: " + e);
 					}
-				} else {
-					// throw new MisMatchObjectException(StringHelper.MISMATCH_OBJECT_EXCEPTION);
 				}
 
 			});
@@ -137,8 +135,6 @@ public class CouponUtil {
 					} catch (SQLException e) {
 						System.err.println("setSQL exception: " + e);
 					}
-				} else {
-					// throw new MisMatchObjectException(StringHelper.MISMATCH_OBJECT_EXCEPTION);
 				}
 
 			});
@@ -262,7 +258,7 @@ public class CouponUtil {
 		try {
 			int id = resultSet.getInt(1);
 			int companyID = resultSet.getInt(2);
-			Category category = Category.values()[resultSet.getInt(3)];
+			Category category = Category.values()[resultSet.getInt(3) - 1];
 			String title = resultSet.getString(4);
 			String description = resultSet.getString(5);
 			LocalDate startDate = DateTimeUtil.convertSQLDate2LocalDate(resultSet.getDate(6));

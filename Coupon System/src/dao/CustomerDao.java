@@ -65,31 +65,6 @@ public class CustomerDao implements ICustomerDao {
 
 	}
 
-	// update company validator
-//	public boolean isValid(Customer customer, boolean fromUpdate) throws ThreadException, DBException {
-//		// check all customer field not empty or null
-//		System.out.println("\r\nstart valiadtion: ");
-//		if (StringHelper.allParametersNotEmpty(customer, fromUpdate)) {
-//			if (!fromUpdate) {
-//				if (!isExists(customer.getEmail())) {
-//					System.out.println("validation ok");
-//					return true;
-//				}
-//			}
-//			Customer existsCustomer = get(customer.getId());
-//			// check for other customers (with different ID)and the same email
-//			if (existsCustomer != null && !isOtherExists(customer.getId(), customer.getEmail())) {
-//				System.out.println("validation ok");
-//				return true;
-//			}
-//
-//		} else {
-//			System.out.println("validation: some parameters is null or empty");
-//		}
-//		throw new DBException("Customer is not valid");
-//
-//	}
-
 	// check for other customer (with different ID)and the same email
 	public boolean isOtherExists(int id, String email) throws ThreadException, DBException, SQLException {
 		String sql = DBUtils.GET_ONE_QUERY.replace(DBUtils.TABLE_PLACE_HOLDER, CustomerUtil.TABLE)
@@ -142,47 +117,6 @@ public class CustomerDao implements ICustomerDao {
 		return customers;
 
 	}
-
-//	public int getCount(String sql) throws DBException, ThreadException {
-//		Connection connection = ConnectionPool.getInstance().getConnection();
-//		try (PreparedStatement statement = connection.prepareStatement(sql)) {
-//			System.out.println("getCount sql: " + statement);
-//			ResultSet resultSet = statement.executeQuery();
-//			DBUtils.returnConnection(connection);
-//			System.out.println(StringHelper.RESULT_SET_IS_NOT_NULL_MESSAGE);
-//			if (resultSet.next()) {
-//				return resultSet.getInt(1);
-//			}
-//		} catch (SQLException e) {
-//			DBUtils.returnConnection(connection);
-//			throw new DBException(StringHelper.COMPANY_EXCEPTION + e);
-//		}
-//		return 0;
-//
-//	}
-
-//	public List<Customer> get(String sql) throws DBException, ThreadException {
-//		List<Customer> customers = new ArrayList<Customer>();
-//		System.out.println("get all Query: " + sql);
-//		Connection connection = ConnectionPool.getInstance().getConnection();
-//		try (PreparedStatement statement = connection.prepareStatement(sql)) {
-//			ResultSet resultSet = statement.executeQuery();
-//			DBUtils.returnConnection(connection);
-//			if (resultSet != null) {
-//				System.out.println(StringHelper.RESULT_SET_IS_NOT_NULL_MESSAGE);
-//				while (resultSet.next()) {
-//					Customer customer = CustomerUtil.resultSetToCustomer(resultSet);
-//					customers.add(customer);
-//				}
-//			} else {
-//				System.out.println(StringHelper.RESULT_SET_ISNULL_MESSAGE);
-//			}
-//		} catch (SQLException e) {
-//			DBUtils.returnConnection(connection);
-//			throw new DBException(StringHelper.CUSTOMER_GET_EXCEPTION + e);
-//		}
-//		return customers;
-//	}
 
 	@Override
 	public boolean isExists(String email) throws ThreadException, DBException, SQLException {

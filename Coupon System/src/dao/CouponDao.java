@@ -123,15 +123,6 @@ public class CouponDao implements ICouponDao {
 	}
 
 	@Override
-	public List<Integer> getCouponPurchaseByCustomer(int customerID)
-			throws ThreadException, DBException, SQLException, MisMatchObjectException {
-		String sql = CouponUtil.GET_COUPONS_FROM_CUSTOMERS_VS_COUPONS_BY_CUSTOMER_ID;
-		Map<Integer, Object> parameters = new HashMap<Integer, Object>();
-		parameters.put(1, customerID);
-		return CouponUtil.executeQuerySpecial(sql, parameters);
-	}
-
-	@Override
 	public List<Integer> getCouponPurchase(int customerID, int couponID)
 			throws ThreadException, DBException, SQLException, MisMatchObjectException {
 		String sql = DBUtils.GET_ONE_QUERY.replace(DBUtils.TABLE_PLACE_HOLDER, CouponUtil.TABLE_CUSTOMERS_VS_COUPONS)
@@ -170,10 +161,14 @@ public class CouponDao implements ICouponDao {
 	}
 
 	@Override
-	public List<Coupon> get(int companyID, double maxPrice) throws ThreadException, DBException, SQLException {
+	public List<Coupon> get(int companyID, double maxPrice)
+			throws ThreadException, DBException, SQLException, MisMatchObjectException {
 		String sql = DBUtils.GET_ONE_QUERY.replace(DBUtils.TABLE_PLACE_HOLDER, CouponUtil.TABLE)
 				.replace(DBUtils.PARAMETER_PLACE_HOLDER, CouponUtil.GET_BY_COMPANY_ID_AND_MAX_PRICE);
-		return CouponUtil.executeQuery(sql);
+		Map<Integer, Object> parameters = new HashMap<Integer, Object>();
+		parameters.put(1, companyID);
+		parameters.put(2, maxPrice);
+		return CouponUtil.executeQuery(sql, parameters);
 	}
 
 	@Override
@@ -196,12 +191,6 @@ public class CouponDao implements ICouponDao {
 		parameters.put(1, companyID);
 		parameters.put(2, category.ordinal() + 1);
 		return CouponUtil.executeQuery(sql, parameters);
-	}
-
-	@Override
-	public int getCount(int companyID) throws ThreadException, DBException, SQLException, MisMatchObjectException {
-		List<Coupon> coupons = getByCompany(companyID);
-		return coupons.size();
 	}
 
 	@Override
@@ -230,7 +219,7 @@ public class CouponDao implements ICouponDao {
 	@Override
 	public List<Coupon> getCustomerCoupons(int customerID, double maxPrice)
 			throws ThreadException, DBException, SQLException, MisMatchObjectException {
-		String sql = DBUtils.GET_CUSTOMERS_COUPONS_QUERY;
+		String sql = DBUtils.GET_CUSTOMERS_COUPONS_BY_MAX_PRICE_QUERY;
 		Map<Integer, Object> parameters = new HashMap<Integer, Object>();
 		parameters.put(1, customerID);
 		parameters.put(2, maxPrice);
@@ -243,6 +232,7 @@ public class CouponDao implements ICouponDao {
 		String sql = DBUtils.GET_CUSTOMERS_COUPONS_CATEGORY_QUERY;
 		Map<Integer, Object> parameters = new HashMap<Integer, Object>();
 		parameters.put(1, customerID);
+		System.out.println(category.ordinal() + 1);
 		parameters.put(2, category.ordinal() + 1);
 		return CouponUtil.executeQuery(sql, parameters);
 	}

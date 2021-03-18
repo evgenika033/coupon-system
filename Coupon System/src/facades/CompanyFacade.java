@@ -36,6 +36,7 @@ public class CompanyFacade extends ClientFacade {
 									// add=false);
 		if (isValid(coupon, fromUpdate)) {
 			couponDao.add(coupon);
+			System.out.println("add coupon success");
 		}
 	}
 
@@ -47,8 +48,28 @@ public class CompanyFacade extends ClientFacade {
 		}
 	}
 
-	public void deleteCoupon(int couponID) throws DBException, ThreadException {
-		couponDao.delete(couponID);
+	public void deleteCoupon(int couponID) throws DBException, ThreadException, SQLException, MisMatchObjectException {
+		Coupon coupon = couponDao.get(couponID);
+		// check if coupon is from current company
+		if (isCompanyCoupon(coupon)) {
+			List<Integer> customerIDList = couponDao.getCouponPurchaseByCoupon(couponID);
+			for (int customerID : customerIDList) {
+				couponDao.deleteCouponPurchase(customerID, couponID);
+			}
+			couponDao.delete(couponID);
+		} else {
+			System.err.println("coupon not for current login company. select other coupon");
+		}
+	}
+
+	/**
+	 * check if coupon is from current company
+	 * 
+	 * @param coupons
+	 * @return
+	 */
+	private boolean isCompanyCoupon(Coupon coupon) {
+		return coupon != null && coupon.getCompanyID() == companyID;
 	}
 
 	// all coupons of specific company
@@ -62,7 +83,8 @@ public class CompanyFacade extends ClientFacade {
 		return couponDao.getByCategory(companyID, category);
 	}
 
-	public List<Coupon> getCompanyCoupons(double maxPrice) throws DBException, ThreadException, SQLException {
+	public List<Coupon> getCompanyCoupons(double maxPrice)
+			throws DBException, ThreadException, SQLException, MisMatchObjectException {
 		return couponDao.get(companyID, maxPrice);
 	}
 
@@ -88,11 +110,16 @@ public class CompanyFacade extends ClientFacade {
 				}
 				// update validation
 			} else {
+				// validate coupon by id exist in DB and company id not changed
+				Coupon dbCoupon = couponDao.get(coupon.getId());
+				if (dbCoupon != null && dbCoupon.getCompanyID() == coupon.getCompanyID()) {
+					if (!couponDao.isOtherExist(coupon.getTitle(), coupon.getCompanyID(), coupon.getId())) {
+						System.out.println("validation ok");
+						return true;
+					}
 
-				if (!couponDao.isOtherExist(coupon.getTitle(), coupon.getCompanyID(), coupon.getId())) {
-					System.out.println("validation ok");
-					return true;
 				}
+
 			}
 		} else {
 			System.out.println("validation: some parameters is null or empty");
@@ -100,34 +127,5 @@ public class CompanyFacade extends ClientFacade {
 
 		throw new DBException("validation: coupon is not valid");
 	}
-
-//	public boolean isValid(Company company, boolean fromUpdate) throws ThreadException, DBException, MisMatchObjectException {
-//		// check all company field not empty or null
-//		System.out.println("\r\nstart valiadtion: ");
-//		if (StringHelper.allParametersNotEmpty(company, fromUpdate)) {
-//			if (!fromUpdate) {
-//				if (!companyDao.isExists(company.getName(), company.getEmail())) {
-//					System.out.println("validation ok");
-//					return true;
-//				}
-//			} else {
-//				Company existsCompany = getCompanyDetails();
-//				// check for other company (with different ID)and the same email
-//				if (existsCompany != null && existsCompany.getName().equals(company.getName())) {
-//					String sql = DBUtils.IS_OTHER_COMPANY_EXISTS_QUERY
-//							.replace(DBUtils.EMAIL_PLACE_HOLDER, existsCompany.getEmail())
-//							.replace(DBUtils.ID_PLACE_HOLDER, String.valueOf(existsCompany.getId()));
-//					if (companyDao.getCount(sql) == 0) {
-//						System.out.println(StringHelper.VALIDATION_OK_MESSAGE);
-//						return true;
-//					}
-//				}
-//			}
-//		} else {
-//			System.out.println(StringHelper.VALIDATION_PARAMETERS_ERROR_MESSAGE);
-//		}
-//		throw new DBException(StringHelper.COMPANY_VALIDATION_EXCEPTION);
-//
-//	}
 
 }

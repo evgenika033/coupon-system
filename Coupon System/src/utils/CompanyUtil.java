@@ -17,7 +17,7 @@ import exception.ThreadException;
 public class CompanyUtil {
 	public static final String TABLE = "`coupons_system`.`company`";
 	public static final String PARAMETER_ID = "id=?";
-	public static final String PARAMETER_NAME_EMAIL = "`name`=? and `email`=?";
+	public static final String PARAMETER_NAME_EMAIL = "`name`=? or `email`=?";
 	public static final String PARAMETER_EMAIL_AND_NOT_ID = "`email`=? and not `id`=?";
 	public static final String UPDATE_EMAIL_PASSWORD_PARAMETER = "`name`=?, `email`=?,`password` = ?";
 
