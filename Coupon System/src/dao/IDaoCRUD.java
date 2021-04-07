@@ -21,8 +21,4 @@ public interface IDaoCRUD<T> {
 	// return collection
 	List<T> get() throws DBException, ThreadException, SQLException;
 
-	// List<T> get(String sql) throws DBException, ThreadException;
-
-	// void returnConnection(Connection connection) throws DBException;
-
 }

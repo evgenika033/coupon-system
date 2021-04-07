@@ -27,6 +27,17 @@ public class StringHelper {
 	public static final String CUSTOMER_EXISTS_FALSE_MESSAGE = "IsCustomer not exists with email ";
 	public static final String COUPON_NOT_EXISTS_MESSAGE = "isCoupon not exists with title %s, companyID %s";
 	public static final String COMPANY_UPDATE_FAILED_MESSAGE = "Update company failed: ";
+	public static final String CONNECTIONS_ALL_CLOSE_MESSAGE = "all connection is closed. exit";
+	public static final String COMPANY_ADD_MESSAGE = "The company added: ";
+	public static final String COMPANY_UPDATE_MESSAGE = "Update company success: ";
+	public static final String COMPANY_DELETE_SUCCESS_MESSAGE = "The company deleted successfully";
+	public static final String COMPANY_DELETE_FAILED_MESSAGE = "The company delete failed.";
+	public static final String COMPANY_DELETE_EXIST_MESSAGE = "IsCompany exists with name ";
+	public static final String COMPANY_DELETE_NOT_EXIST_MESSAGE = "IsCompany not exists with name ";
+	public static final String COMPANY_OTHER_EXIST_MESSAGE = "is other company exists with id ";
+	public static final String COMPANY_OTHER_NOT_EXIST_MESSAGE = "is other company not exists with id ";
+	public static final String CUSTOMER_OTHER_EXIST_MESSAGE = "IsOtherCustomer exists with id ";
+	public static final String CUSTOMER_OTHER_NOT_EXIST_MESSAGE = "IsOtherCustomer not exists with id ";
 	// exception section
 	public static final String COMPANY_EXCEPTION = "get company exception. ";
 	public static final String CONNECTION_EXCEPTION = "open connection failed. ";
@@ -47,6 +58,8 @@ public class StringHelper {
 	public static final String CUSTOMER_EXISTS_EXCEPTION = "IsCustomer exists Exception ";
 	public static final String MISMATCH_OBJECT_EXCEPTION = "All parameters exception: object mismatch";
 	public static final String LOGIN_EXCEPTION = "Login failed ";
+	public static final String CONNECTION_CLOSE_EXCEPTION = "connection close exception: ";
+	public static final String FILES_READ_OPEN_EXCEPTION = "read/open file exception: ";
 
 	/**
 	 * check all parameters for Coupon/Company/Customer for new or update object.

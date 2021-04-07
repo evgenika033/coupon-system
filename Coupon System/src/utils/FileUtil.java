@@ -29,6 +29,7 @@ public class FileUtil {
 	private static CompanyDao companyDao = new CompanyDao();
 	private static CustomerDao customerDao = new CustomerDao();
 	private static CouponDao couponDao = new CouponDao();
+	private static final String sqlCategory = "insert into `coupons_system`.`category` (`name`) values (?)";
 
 	// get data from file and create on DB
 	public static void createData() throws IOException, ThreadException, DBException, MisMatchObjectException {
@@ -50,7 +51,7 @@ public class FileUtil {
 				line = br.readLine();
 			}
 		} catch (Exception e) {
-			System.out.println("read/open file exception: " + e);
+			System.out.println(StringHelper.FILES_READ_OPEN_EXCEPTION + e);
 		}
 		return lines;
 	}
@@ -113,7 +114,7 @@ public class FileUtil {
 
 	// create categories from Category enum
 	private static void createCategory() throws ThreadException, DBException {
-		String sql = "insert into `coupons_system`.`category` (`name`) values (?)";
+		String sql = sqlCategory;
 		Map<Integer, Object> parameters;
 		for (Category category : Category.values()) {
 			parameters = new HashMap<Integer, Object>();

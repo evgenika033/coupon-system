@@ -74,10 +74,10 @@ public class CustomerDao implements ICustomerDao {
 		parameters.put(2, id);
 		List<Customer> customers = CustomerUtil.executeQuery(sql, parameters);
 		if (customers.size() > 0) {
-			System.out.println("IsOtherCustomer exists with id " + id + ", email " + email);
+			System.out.println(StringHelper.CUSTOMER_OTHER_EXIST_MESSAGE + id + ", email " + email);
 			return true;
 		}
-		System.out.println("IsOtherCustomer not exists with id " + id + ", email " + email);
+		System.out.println(StringHelper.CUSTOMER_OTHER_NOT_EXIST_MESSAGE + id + ", email " + email);
 		return false;
 
 	}

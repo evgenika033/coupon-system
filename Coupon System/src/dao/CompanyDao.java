@@ -30,7 +30,7 @@ public class CompanyDao implements ICompanyDao {
 			parameters.put(2, addObject.getEmail());
 			parameters.put(3, addObject.getPassword());
 			CompanyUtil.execute(sql, parameters);
-			System.out.println("The company added: " + addObject.getName());
+			System.out.println(StringHelper.COMPANY_ADD_MESSAGE + addObject.getName());
 
 		} else {
 			throw new DBException(StringHelper.VALIDATION_PARAMETERS_ERROR_MESSAGE);
@@ -51,7 +51,7 @@ public class CompanyDao implements ICompanyDao {
 			parameters.put(4, updateObject.getId());
 			int result = CustomerUtil.executeUpdate(sql, parameters);
 			if (result > 0) {
-				System.out.println("Update company success: " + updateObject.getName());
+				System.out.println(StringHelper.COMPANY_UPDATE_MESSAGE + updateObject.getName());
 			} else {
 				System.out.println(StringHelper.COMPANY_UPDATE_FAILED_MESSAGE + updateObject.getName());
 
@@ -90,9 +90,9 @@ public class CompanyDao implements ICompanyDao {
 		parameters.put(1, id);
 		int result = CompanyUtil.executeUpdate(sql, parameters);
 		if (result > 0) {
-			System.out.println("The company deleted successfully");
+			System.out.println(StringHelper.COMPANY_DELETE_SUCCESS_MESSAGE);
 		} else {
-			System.out.println("The company delete failed.");
+			System.out.println();
 		}
 	}
 
@@ -105,10 +105,10 @@ public class CompanyDao implements ICompanyDao {
 		parameters.put(2, email);
 		List<Company> companies = CompanyUtil.executeQuery(sql, parameters);
 		if (companies.size() > 0) {
-			System.out.println("IsCompany exists with name " + name + ", email " + email);
+			System.out.println(StringHelper.COMPANY_DELETE_EXIST_MESSAGE + name + ", email " + email);
 			return true;
 		} else {
-			System.out.println("IsCompany not exists with name " + name + ", email " + email);
+			System.out.println(StringHelper.COMPANY_DELETE_NOT_EXIST_MESSAGE + name + ", email " + email);
 			return false;
 		}
 	}
@@ -135,10 +135,10 @@ public class CompanyDao implements ICompanyDao {
 		parameters.put(2, id);
 		List<Company> companies = CompanyUtil.executeQuery(sql, parameters);
 		if (companies.size() > 0) {
-			System.out.println("IsOtherCompany exists with id " + id + ", email " + email);
+			System.out.println(StringHelper.COMPANY_OTHER_EXIST_MESSAGE + id + ", email " + email);
 			return true;
 		} else {
-			System.out.println("IsOtherCompany not exists with id " + id + ", email " + email);
+			System.out.println(StringHelper.COMPANY_OTHER_NOT_EXIST_MESSAGE + id + ", email " + email);
 			return false;
 		}
 

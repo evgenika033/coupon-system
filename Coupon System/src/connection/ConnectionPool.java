@@ -75,11 +75,11 @@ public class ConnectionPool {
 				try {
 					c.close();
 				} catch (SQLException e) {
-					System.out.println("connection close exception: " + e.getMessage());
+					System.out.println(StringHelper.CONNECTION_CLOSE_EXCEPTION + e.getMessage());
 				}
 			});
 			connections.removeAllElements();
-			System.out.println("all connection is closed. exit");
+			System.out.println(StringHelper.CONNECTIONS_ALL_CLOSE_MESSAGE);
 		}
 	}
 }
